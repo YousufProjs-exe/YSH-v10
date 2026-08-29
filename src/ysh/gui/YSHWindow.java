@@ -40,6 +40,17 @@ public class YSHWindow {
     public YSHWindow() {
 
         shell = new Shell();
+        shell.setMessageListener(message -> {
+                
+            SwingUtilities.invokeLater(() -> {
+            
+                terminal.append(
+                    "\n" + message + "\n"
+                );
+            
+                printPrompt();
+            });
+        });
         JFrame frame = new JFrame("YSH v10");
         frame.setSize(850, 550);
         frame.setDefaultCloseOperation(

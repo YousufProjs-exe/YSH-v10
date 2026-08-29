@@ -4,9 +4,9 @@ package ysh.core;
 import ysh.filesystem.FileSystem;
 import ysh.notes.NoteManager;
 import ysh.calculator.ExpressionCalculator;
+import network.NetworkManager;
 
 import java.util.Arrays;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.awt.Desktop;
@@ -19,6 +19,7 @@ public class Shell {
     private final FileSystem fileSystem;
     private final NoteManager noteManager;
     private final ExpressionCalculator calculator;
+    private final NetworkManager networkManager;
     private boolean developerMode = false;
     private String currentTheme = "matrix";
 
@@ -30,6 +31,7 @@ public class Shell {
         fileSystem = new FileSystem();
         calculator = new ExpressionCalculator();
         noteManager = new NoteManager();
+        networkManager = new NetworkManager();
 
         registerBuiltInCommands();
     }
@@ -646,6 +648,146 @@ public class Shell {
         
             return "theme changed to " + currentTheme + "\n";
         });
+
+        // ***LAN NETWORKING***
+        // HOST
+        registry.register("host", args -> {
+        
+            int port = 6000;
+        
+            if (args.length > 0) {
+            
+                try {
+                
+                    port = Integer.parseInt(args[0]);
+                
+                } catch (NumberFormatException e) {
+                
+                    return "usage: host [port]\n";
+                }
+            }
+        
+            return networkManager.startServer(port) + "\n";
+        });
+
+        // STOPHOST
+        registry.register("stophost", args -> {
+        
+            return networkManager.stopServer() + "\n";
+        });
+
+        // CONNECT
+        registry.register("connect", args -> {
+        
+            if (args.length < 1) {
+            
+                return
+                    "usage: connect host [port]\n";
+            }
+        
+            int port = 6000;
+        
+            if (args.length >= 2) {
+            
+                try {
+                
+                    port =
+                        Integer.parseInt(args[1]);
+                
+                } catch (NumberFormatException e) {
+                
+                    return
+                        "connect: invalid port\n";
+                }
+            }
+        
+            return
+                networkManager.connect(
+                    args[0],
+                    port
+                ) + "\n";
+        });
+
+
+        // MSG
+        registry.register("msg", args -> {
+        
+            if (args.length == 0) {
+            
+                return
+                    "usage: msg message\n";
+            }
+        
+            String message =
+                String.join(
+                    " ",
+                    args
+                );
+            
+            return
+                networkManager.send(
+                    message
+                ) + "\n";
+        });
+
+
+        // DISCONNECT
+        registry.register("disconnect", args -> {
+        
+            return
+                networkManager.disconnect()
+                + "\n";
+        });
+
+        // USERNAME
+        registry.register("name", args -> {
+
+            if (args.length == 0) {
+            
+                return
+                    "usage: name username\n";
+            }
+        
+            return networkManager.setName(
+                String.join(" ", args)
+            ) + "\n";
+        });
+
+        // ANNOUNCE 
+        registry.register("announce", args -> {
+
+            if (args.length == 0) {
+            
+                return
+                    "usage: announce message\n";
+            }
+        
+            return networkManager.announce(
+                String.join(" ", args)
+            ) + "\n";
+        });
+
+        // LIST 
+        registry.register("listusers", args -> {
+
+            return networkManager.listUsers()
+                + "\n";
+        });
+
+        // KICK 
+        registry.register("kick", args -> {
+
+            if (args.length == 0) {
+            
+                return
+                    "usage: kick username\n";
+            }
+        
+            return networkManager.kick(
+                String.join(" ", args)
+            ) + "\n";
+        });
+        
     }
 
     public String getCurrentDirectoryName() {
@@ -678,48 +820,10 @@ public class Shell {
         return result;
     }
 
-    // CALC SYSTEM / FUNCTION 
-    private double calculate(String expression) {
-
-        expression =
-            expression.replaceAll("\\s+", "");
-
-        if (expression.contains("+")) {
-
-            String[] p =
-                expression.split("\\+", 2);
-
-            return Double.parseDouble(p[0])
-                 + Double.parseDouble(p[1]);
-        }
-
-        if (expression.contains("-")) {
-
-            String[] p =
-                expression.split("-", 2);
-
-            return Double.parseDouble(p[0])
-                 - Double.parseDouble(p[1]);
-        }
-
-        if (expression.contains("*")) {
-
-            String[] p =
-                expression.split("\\*", 2);
-
-            return Double.parseDouble(p[0])
-                 * Double.parseDouble(p[1]);
-        }
-
-        if (expression.contains("/")) {
-
-            String[] p =
-                expression.split("/", 2);
-
-            return Double.parseDouble(p[0])
-                 / Double.parseDouble(p[1]);
-        }
-
-        return Double.parseDouble(expression);
+    public void setMessageListener(
+        java.util.function.Consumer<String> listener
+    ) {
+    
+        networkManager.setMessageListener(listener);
     }
 }
