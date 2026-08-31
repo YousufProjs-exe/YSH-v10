@@ -41,14 +41,11 @@ public class YSHWindow {
 
         shell = new Shell();
         shell.setMessageListener(message -> {
-                
+
             SwingUtilities.invokeLater(() -> {
             
-                terminal.append(
-                    "\n" + message + "\n"
-                );
+                showNetworkMessage(message);
             
-                printPrompt();
             });
         });
         JFrame frame = new JFrame("YSH v10");
@@ -72,8 +69,8 @@ public class YSHWindow {
             new JScrollPane(terminal),
             BorderLayout.CENTER
         );
-        printBanner();
         timeGreeting();
+        printBanner();
 
         // KEY LISTENERS 
         terminal.addKeyListener(
@@ -791,6 +788,39 @@ public class YSHWindow {
         
     """
         );
+    }
+
+    private void showNetworkMessage(String message) {
+
+        try {
+    
+            int end =
+                terminal.getDocument().getLength();
+    
+            String currentInput =
+                terminal.getText(
+                    promptPosition,
+                    end - promptPosition
+                );
+    
+            terminal.getDocument().remove(
+                promptPosition,
+                end - promptPosition
+            );
+    
+            terminal.append(
+                "\n" + message + "\n"
+            );
+    
+            printPrompt();
+    
+            terminal.append(currentInput);
+    
+            scrollToBottom();
+    
+        } catch (Exception ignored) {
+    
+        }
     }
 
     public static void main(String[] args) {
