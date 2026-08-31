@@ -6,7 +6,7 @@
 
     to Compile / Execute and Run / Use 
 
- */
+*/
 
 package ysh;
 
@@ -18,7 +18,7 @@ public class YSH {
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater( 
-            YSHWindow::new
+            YSHWindow::new 
         );
     }
 }

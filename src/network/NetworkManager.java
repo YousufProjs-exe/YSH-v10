@@ -13,29 +13,51 @@ public class NetworkManager {
             server != null &&
             server.isRunning()
         ) {
-
+        
             return
                 "network: server already running";
         }
-
+    
         server = new ChatServer(port);
-
+    
+        server.setMessageListener(messageListener);
+    
         try {
-
+        
             server.start();
-
+        
+            client = new ChatClient();
+        
+            client.setMessageListener(messageListener);
+        
+            String result =
+                client.connect(
+                    "localhost",
+                    port
+                );
+            
+            if (!result.equals("network: connected")) {
+            
+                server.stop();
+            
+                return result;
+            }
+        
+            client.setName("HOST");
+        
             return
                 "network: server started on port "
-                + port;
-
+                + port
+                + "\nnetwork: joined as HOST";
+        
         } catch (Exception e) {
-
+        
             return
                 "network: "
                 + e.getMessage();
         }
     }
-
+    
     public String stopServer() {
 
         if (

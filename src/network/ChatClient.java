@@ -7,12 +7,17 @@ import java.net.*;
 public class ChatClient {
 
     private Socket socket;
-
     private PrintWriter writer;
-
     private BufferedReader reader;
-
     private boolean connected;
+    private java.util.function.Consumer<String> messageListener;
+
+    public void setMessageListener(
+        java.util.function.Consumer<String> listener
+    ) {
+
+        this.messageListener = listener;
+    }
 
     public String connect(
         String host,
@@ -66,10 +71,12 @@ public class ChatClient {
                             != null
                     ) {
 
-                        System.out.println(
-                            "[NETWORK] "
-                            + message
-                        );
+                        if (messageListener != null) {
+
+                            messageListener.accept(
+                                "[NETWORK] " + message
+                            );
+                        }
                     }
 
                 } catch (IOException ignored) {

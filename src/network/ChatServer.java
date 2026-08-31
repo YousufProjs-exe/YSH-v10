@@ -19,7 +19,7 @@ public class ChatServer {
     public void setMessageListener(
         java.util.function.Consumer<String> listener
     ) {
-        this.messageListener = listener;
+        this.listener = listener;
     }
 
     public ChatServer(int port) {
@@ -47,6 +47,15 @@ public class ChatServer {
                         new ClientHandler(socket);
 
                     clients.add(client);
+                    String joinMessage =
+                        "[YSH] " + client.getName()
+                        + " joined the network";
+                                    
+                    broadcast(joinMessage);
+                                    
+                    if (listener != null) {
+                        listener.accept(joinMessage);
+                    }
 
                     Thread clientThread =
                         new Thread(client);
