@@ -15,8 +15,8 @@ import ysh.gui.YSHWindow;
 
 public class YSH {
 
-    public static void main(String[] args) {
-
+     public static void main(String[] args) {
+ 
         SwingUtilities.invokeLater( 
             YSHWindow::new 
         );
@@ -41,6 +41,7 @@ public class YSH {
     14. Great vision having implementation and building an ecosystem around it in all directions like on web and custom apps like browser too , than just a thought and wasting time like other teens 
 
 */ 
+
 /*
 
     1. visit https://github.com/YousufProjs-exe/YSH for v7 , https://github.com/YousufProjs-exe/YSH-CLI for all abt v1-v5 CLI , https://github.com/YousufProjs-exe/YSH-v8 for v8 details 
@@ -105,5 +106,6 @@ public class YSH {
       you can more like that coz i only remebered this 
 
 */
+
 // 1827 
 // 2960 
