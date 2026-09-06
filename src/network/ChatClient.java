@@ -3,17 +3,20 @@ package network;
 
 import java.io.*;
 import java.net.*;
+import java.util.function.Consumer;
 
 public class ChatClient {
 
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
-    private boolean connected;
-    private java.util.function.Consumer<String> messageListener;
+
+    private volatile boolean connected;
+
+    private Consumer<String> messageListener;
 
     public void setMessageListener(
-        java.util.function.Consumer<String> listener
+        Consumer<String> listener
     ) {
 
         this.messageListener = listener;
@@ -21,8 +24,11 @@ public class ChatClient {
 
     public String connect(
         String host,
-        int port
+        int port,
+        String name
     ) {
+
+        disconnect();
 
         try {
 
@@ -44,20 +50,27 @@ public class ChatClient {
 
             connected = true;
 
+            writer.println(
+                "/name " + name
+            );
+
             startListener();
 
             return "network: connected";
 
         } catch (IOException e) {
 
-            return "network: "
+            disconnect();
+
+            return
+                "network: "
                 + e.getMessage();
         }
     }
 
     private void startListener() {
 
-        Thread listener =
+        Thread listenerThread =
             new Thread(() -> {
 
                 try {
@@ -71,10 +84,12 @@ public class ChatClient {
                             != null
                     ) {
 
-                        if (messageListener != null) {
+                        if (
+                            messageListener != null
+                        ) {
 
                             messageListener.accept(
-                                "[NETWORK] " + message
+                                message
                             );
                         }
                     }
@@ -88,16 +103,19 @@ public class ChatClient {
 
             });
 
-        listener.setDaemon(true);
-
-        listener.start();
+        listenerThread.setDaemon(true);
+        listenerThread.start();
     }
 
     public String send(String message) {
 
-        if (!connected) {
+        if (
+            !connected ||
+            writer == null
+        ) {
 
-            return "network: not connected";
+            return
+                "network: not connected";
         }
 
         writer.println(message);
@@ -112,27 +130,18 @@ public class ChatClient {
         try {
 
             if (socket != null) {
-
                 socket.close();
             }
 
         } catch (IOException ignored) {
         }
+
+        socket = null;
+        writer = null;
+        reader = null;
     }
 
     public boolean isConnected() {
-
         return connected;
-    }
-
-    public String setName(String name) {
-
-        if (!connected) {
-            return "network: not connected";
-        }
-    
-        writer.println("/name " + name);
-    
-        return "network: name set to " + name;
     }
 }

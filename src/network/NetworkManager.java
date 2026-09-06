@@ -1,11 +1,49 @@
 
 package network;
 
+import java.util.function.Consumer;
+
 public class NetworkManager {
 
     private ChatServer server;
     private ChatClient client;
-    private java.util.function.Consumer<String> messageListener;
+
+    private Consumer<String> messageListener;
+
+    private String username = "Guest";
+
+    public void setMessageListener(
+        Consumer<String> listener
+    ) {
+
+        this.messageListener = listener;
+
+        if (client != null) {
+            client.setMessageListener(listener);
+        }
+
+        if (server != null) {
+            server.setMessageListener(listener);
+        }
+    }
+
+    public String setName(String name) {
+
+        if (
+            name == null ||
+            name.trim().isEmpty()
+        ) {
+
+            return
+                "network: invalid name";
+        }
+
+        username = name.trim();
+
+        return
+            "network: name set to "
+            + username;
+    }
 
     public String startServer(int port) {
 
@@ -13,51 +51,36 @@ public class NetworkManager {
             server != null &&
             server.isRunning()
         ) {
-        
+
             return
                 "network: server already running";
         }
-    
-        server = new ChatServer(port);
-    
-        server.setMessageListener(messageListener);
-    
+
         try {
-        
+
+            server =
+                new ChatServer(port);
+
+            server.setMessageListener(
+                messageListener
+            );
+
             server.start();
-        
-            client = new ChatClient();
-        
-            client.setMessageListener(messageListener);
-        
-            String result =
-                client.connect(
-                    "localhost",
-                    port
-                );
-            
-            if (!result.equals("network: connected")) {
-            
-                server.stop();
-            
-                return result;
-            }
-        
-            client.setName("HOST");
-        
+
             return
                 "network: server started on port "
-                + port
-                + "\nnetwork: joined as HOST";
-        
+                + port;
+
         } catch (Exception e) {
-        
+
+            server = null;
+
             return
                 "network: "
                 + e.getMessage();
         }
     }
-    
+
     public String stopServer() {
 
         if (
@@ -70,6 +93,7 @@ public class NetworkManager {
         }
 
         server.stop();
+        server = null;
 
         return
             "network: server stopped";
@@ -89,24 +113,30 @@ public class NetworkManager {
                 "network: already connected";
         }
 
-        client = new ChatClient();
-        client.setMessageListener(messageListener);
+        client =
+            new ChatClient();
 
-        return client.connect(
-            host,
-            port
+        client.setMessageListener(
+            messageListener
         );
-    }
 
-    public String send(String message) {
+        String result =
+            client.connect(
+                host,
+                port,
+                username
+            );
 
-        if (client == null) {
+        if (
+            !result.equals(
+                "network: connected"
+            )
+        ) {
 
-            return
-                "network: not connected";
+            client = null;
         }
 
-        return client.send(message);
+        return result;
     }
 
     public String disconnect() {
@@ -121,9 +151,48 @@ public class NetworkManager {
         }
 
         client.disconnect();
+        client = null;
 
         return
             "network: disconnected";
+    }
+
+    public String send(String message) {
+
+        if (
+            message == null ||
+            message.trim().isEmpty()
+        ) {
+
+            return
+                "network: empty message";
+        }
+
+        if (
+            client != null &&
+            client.isConnected()
+        ) {
+
+            return client.send(
+                message
+            );
+        }
+
+        if (
+            server != null &&
+            server.isRunning()
+        ) {
+
+            server.hostMessage(
+                username,
+                message
+            );
+
+            return "sent";
+        }
+
+        return
+            "network: not connected";
     }
 
     public boolean isServerRunning() {
@@ -133,72 +202,60 @@ public class NetworkManager {
             server.isRunning();
     }
 
-    public String setName(String name) {
+    public boolean isConnected() {
 
-        if (client == null) {
-            return "network: not connected";
-        }
-    
-        return client.setName(name);
-    }
-    
-    
-    public String announce(String message) {
-    
-        if (
-            server == null ||
-            !server.isRunning()
-        ) {
-        
-            return
-                "network: server not running";
-        }
-    
-        server.broadcast(
-            "[ANNOUNCEMENT] " + message
-        );
-    
-        return "announcement sent";
-    }
-    
-    
-    public String listUsers() {
-    
-        if (
-            server == null ||
-            !server.isRunning()
-        ) {
-        
-            return
-                "network: server not running";
-        }
-    
-        return server.getUsers();
-    }
-    
-    
-    public String kick(String name) {
-    
-        if (
-            server == null ||
-            !server.isRunning()
-        ) {
-        
-            return
-                "network: server not running";
-        }
-    
-        return server.kick(name);
+        return
+            client != null &&
+            client.isConnected();
     }
 
-    public void setMessageListener(
-        java.util.function.Consumer<String> listener
+    public String announce(
+        String message
     ) {
 
-        this.messageListener = listener;
+        if (
+            server == null ||
+            !server.isRunning()
+        ) {
 
-        if (client != null) {
-            client.setMessageListener(listener);
+            return
+                "network: server not running";
         }
+
+        server.broadcast(
+            "[ANNOUNCEMENT] "
+            + message
+        );
+
+        return
+            "announcement sent";
+    }
+
+    public String listUsers() {
+
+        if (
+            server == null ||
+            !server.isRunning()
+        ) {
+
+            return
+                "network: server not running";
+        }
+
+        return server.getUsers();
+    }
+
+    public String kick(String name) {
+
+        if (
+            server == null ||
+            !server.isRunning()
+        ) {
+
+            return
+                "network: server not running";
+        }
+
+        return server.kick(name);
     }
 }

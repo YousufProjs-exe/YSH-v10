@@ -9,21 +9,22 @@ import java.util.function.Consumer;
 public class ChatServer {
 
     private final int port;
-
     private ServerSocket serverSocket;
-    private Consumer<String> listener;
-    private boolean running;
+    private volatile boolean running;
+
+    private Consumer<String> messageListener;
+
     private final List<ClientHandler> clients =
         Collections.synchronizedList(new ArrayList<>());
 
-    public void setMessageListener(
-        java.util.function.Consumer<String> listener
-    ) {
-        this.listener = listener;
-    }
-
     public ChatServer(int port) {
         this.port = port;
+    }
+
+    public void setMessageListener(
+        Consumer<String> listener
+    ) {
+        this.messageListener = listener;
     }
 
     public void start() throws IOException {
@@ -35,78 +36,98 @@ public class ChatServer {
         serverSocket = new ServerSocket(port);
         running = true;
 
-        Thread serverThread = new Thread(() -> {
-
-            while (running) {
-
-                try {
-
-                    Socket socket = serverSocket.accept();
-
-                    ClientHandler client =
-                        new ClientHandler(socket);
-
-                    clients.add(client);
-                    String joinMessage =
-                        "[YSH] " + client.getName()
-                        + " joined the network";
-                                    
-                    broadcast(joinMessage);
-                                    
-                    if (listener != null) {
-                        listener.accept(joinMessage);
-                    }
-
-                    Thread clientThread =
-                        new Thread(client);
-
-                    clientThread.setDaemon(true);
-                    clientThread.start();
-
-                } catch (IOException e) {
-
-                    if (running) {
-                        System.out.println(
-                            "Network error: "
-                            + e.getMessage()
-                        );
-                    }
-                }
-            }
-
-        });
+        Thread serverThread =
+            new Thread(this::acceptClients);
 
         serverThread.setDaemon(true);
         serverThread.start();
     }
 
-    public void broadcast(String message) {
+    private void acceptClients() {
 
-        synchronized (clients) {
+        while (running) {
 
-            for (ClientHandler client : clients) {
-                client.send(message);
+            try {
+
+                Socket socket =
+                    serverSocket.accept();
+
+                ClientHandler client =
+                    new ClientHandler(socket);
+
+                Thread clientThread =
+                    new Thread(client);
+
+                clientThread.setDaemon(true);
+                clientThread.start();
+
+            } catch (IOException e) {
+
+                if (running) {
+                    notifyListener(
+                        "network: server error: "
+                        + e.getMessage()
+                    );
+                }
             }
         }
     }
 
+    private void notifyListener(String message) {
+
+        if (messageListener != null) {
+            messageListener.accept(message);
+        }
+    }
+
+    public void broadcast(String message) {
+
+        List<ClientHandler> snapshot;
+
+        synchronized (clients) {
+            snapshot =
+                new ArrayList<>(clients);
+        }
+
+        for (ClientHandler client : snapshot) {
+            client.send(message);
+        }
+    }
+
+    public void hostMessage(
+        String name,
+        String message
+    ) {
+
+        broadcast(
+            "[" + name + "] "
+            + message
+        );
+    }
+
     public String getUsers() {
 
-        if (clients.isEmpty()) {
+        List<ClientHandler> snapshot;
+
+        synchronized (clients) {
+            snapshot =
+                new ArrayList<>(clients);
+        }
+
+        if (snapshot.isEmpty()) {
             return "No users connected";
         }
 
         StringBuilder output =
             new StringBuilder();
 
-        synchronized (clients) {
+        output.append("Connected users:\n");
 
-            for (ClientHandler client : clients) {
+        for (ClientHandler client : snapshot) {
 
-                output.append(
-                    client.getName()
-                ).append("\n");
-            }
+            output.append(
+                client.getName()
+            ).append("\n");
         }
 
         return output.toString();
@@ -114,42 +135,55 @@ public class ChatServer {
 
     public String kick(String name) {
 
+        ClientHandler target = null;
+
         synchronized (clients) {
 
-            for (ClientHandler client : clients) {
+            for (
+                ClientHandler client : clients
+            ) {
 
                 if (
                     client.getName()
                         .equalsIgnoreCase(name)
                 ) {
 
-                    client.send(
-                        "[YSH] You were disconnected"
-                    );
-
-                    client.close();
-
-                    clients.remove(client);
-
-                    return "network: user kicked";
+                    target = client;
+                    break;
                 }
             }
         }
 
-        return "network: user not found";
+        if (target == null) {
+            return "network: user not found";
+        }
+
+        target.send(
+            "[YSH] You were kicked"
+        );
+
+        target.close();
+
+        return
+            "network: user kicked";
     }
 
     public void stop() {
 
         running = false;
 
+        List<ClientHandler> snapshot;
+
         synchronized (clients) {
 
-            for (ClientHandler client : clients) {
-                client.close();
-            }
+            snapshot =
+                new ArrayList<>(clients);
 
             clients.clear();
+        }
+
+        for (ClientHandler client : snapshot) {
+            client.close();
         }
 
         try {
@@ -160,6 +194,8 @@ public class ChatServer {
 
         } catch (IOException ignored) {
         }
+
+        serverSocket = null;
     }
 
     public boolean isRunning() {
@@ -173,20 +209,15 @@ public class ChatServer {
         private final Socket socket;
 
         private BufferedReader reader;
-
         private PrintWriter writer;
 
-        private String name;
+        private String name = "Guest";
 
         ClientHandler(Socket socket) {
-
             this.socket = socket;
-
-            name =
-                socket.getInetAddress()
-                    .getHostAddress();
         }
 
+        @Override
         public void run() {
 
             try {
@@ -204,11 +235,49 @@ public class ChatServer {
                         true
                     );
 
+                String firstMessage =
+                    reader.readLine();
+
+                if (
+                    firstMessage == null ||
+                    !firstMessage.startsWith(
+                        "/name "
+                    )
+                ) {
+
+                    close();
+                    return;
+                }
+
+                String newName =
+                    firstMessage
+                        .substring(6)
+                        .trim();
+
+                if (!newName.isEmpty()) {
+                    name = newName;
+                }
+
+                synchronized (clients) {
+                    clients.add(this);
+                }
+
+                String joinMessage =
+                    "[YSH] "
+                    + name
+                    + " joined";
+
+                broadcast(joinMessage);
+
+                notifyListener(joinMessage);
+
                 String message;
 
                 while (
-                    (message = reader.readLine())
-                    != null
+                    running &&
+                    (message =
+                        reader.readLine())
+                        != null
                 ) {
 
                     if (
@@ -217,8 +286,35 @@ public class ChatServer {
                         )
                     ) {
 
-                        name =
-                            message.substring(6);
+                        String oldName =
+                            name;
+
+                        String requestedName =
+                            message
+                                .substring(6)
+                                .trim();
+
+                        if (
+                            !requestedName.isEmpty()
+                        ) {
+
+                            name =
+                                requestedName;
+
+                            String renameMessage =
+                                "[YSH] "
+                                + oldName
+                                + " is now "
+                                + name;
+
+                            broadcast(
+                                renameMessage
+                            );
+
+                            notifyListener(
+                                renameMessage
+                            );
+                        }
 
                         continue;
                     }
@@ -233,7 +329,28 @@ public class ChatServer {
 
             } finally {
 
-                clients.remove(this);
+                boolean removed;
+
+                synchronized (clients) {
+                    removed =
+                        clients.remove(this);
+                }
+
+                if (removed && running) {
+
+                    String leaveMessage =
+                        "[YSH] "
+                        + name
+                        + " left";
+
+                    broadcast(
+                        leaveMessage
+                    );
+
+                    notifyListener(
+                        leaveMessage
+                    );
+                }
 
                 close();
             }
