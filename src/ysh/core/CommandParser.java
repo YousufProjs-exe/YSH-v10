@@ -8,16 +8,13 @@ public class CommandParser {
         input = input.trim();
 
         if (input.isEmpty()) {
+            
             return null;
         }
 
         String[] parts = input.split("\\s+");
-
-        String name =
-            parts[0].toLowerCase();
-            
+        String name = parts[0].toLowerCase();            
         String[] args = new String[parts.length - 1];
-
         System.arraycopy(
             parts,
             1,

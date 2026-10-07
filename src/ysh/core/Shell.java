@@ -2,6 +2,7 @@
 package ysh.core;
 
 import ysh.filesystem.FileSystem;
+import ysh.gui.YSHWindow;
 import ysh.notes.NoteManager;
 import ysh.calculator.ExpressionCalculator;
 import network.NetworkManager;
@@ -13,6 +14,9 @@ import java.awt.Desktop;
 import java.io.File;
 
 public class Shell {
+
+    // win object for clearterminal() and other command related defined functions to access from YSHWindow to Shell
+    YSHWindow win;
 
     private final CommandParser parser;
     private final CommandRegistry registry;
@@ -41,7 +45,8 @@ public class Shell {
         // HELP
         registry.register("help", args -> {
         
-            return """
+            return
+     """
         ===================== YSH v10 HELP =====================
         
         FILESYSTEM
@@ -70,7 +75,7 @@ public class Shell {
           check                       Run YSH system check
         
         ========================================================
-        """;
+    """;
         });
 
         // VERSION
@@ -524,13 +529,13 @@ public class Shell {
             }
         });
 
-        // VERSION
+        // VERSION 
         registry.register("version", args -> {
         
             return """
         YSH - Yousuf Shell
         
-        Version: v10.GUI
+        Version: v10 'BETA' || 'DEMO'
         Java: %s
         
         """.formatted(
@@ -538,7 +543,7 @@ public class Shell {
             );
         });
 
-        // HOME
+        // HOME 
         registry.register("home", args -> {
         
             return fileSystem.cd("~") + "\n";
@@ -554,10 +559,12 @@ public class Shell {
         // CLEAR
         registry.register("clear", args -> {  
 
+            // win object for clearterminal()
+            win.clearTerminal();
             return "__YSH_CLEAR__";
         });
 
-        // TIME
+        // TIME 
         registry.register("time", args -> {
         
             return LocalDateTime.now()
@@ -567,7 +574,7 @@ public class Shell {
                 ) + "\n";
         });
       
-        // DATE
+        // DATE 
         registry.register("date", args -> {
         
             return LocalDateTime.now()

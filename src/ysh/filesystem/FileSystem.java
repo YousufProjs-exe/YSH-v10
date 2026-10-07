@@ -1,4 +1,5 @@
 
+// YSH Networking - yes alot of AI help sadly 
 package ysh.filesystem;
 
 import java.io.IOException;
@@ -11,10 +12,7 @@ public class FileSystem {
 
     public FileSystem() {
 
-        currentPath =
-            Paths.get(System.getProperty("user.home"))
-                 .toAbsolutePath()
-                 .normalize();
+        currentPath = Paths.get(System.getProperty("user.home")).toAbsolutePath().normalize();
 
     }
 
@@ -27,11 +25,9 @@ public class FileSystem {
     // LS
     public String ls() {
 
-        StringBuilder output =
-            new StringBuilder();
+        StringBuilder output = new StringBuilder();
 
-        try (var stream =
-                 Files.list(currentPath)) {
+        try (var stream = Files.list(currentPath)) {
 
             stream
                 .sorted((first, second) -> {
@@ -113,10 +109,11 @@ public class FileSystem {
         
             if (input.isAbsolute()) {
             
-                target =
-                    input.normalize();
+                target = input.normalize();
             
-            } else {
+            } 
+            
+            else {
             
                 target =
                     currentPath
@@ -731,3 +728,5 @@ public class FileSystem {
         }
     }
 }
+
+// implementation - back to legacy commands are pending 

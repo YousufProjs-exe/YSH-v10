@@ -21,6 +21,7 @@ public class YSHWindow {
     private Color bgColor = Color.BLACK;
     private Color textColor = new Color(0, 255, 70);
 
+    // KONAMI FOR DEVELOPER 
     private final int[] konamiCode = {
 
         KeyEvent.VK_UP,
@@ -32,10 +33,23 @@ public class YSHWindow {
         KeyEvent.VK_LEFT,
         KeyEvent.VK_RIGHT,
         KeyEvent.VK_B,
-        KeyEvent.VK_A
+        KeyEvent.VK_A,
+        KeyEvent.VK_ENTER
     };
 
     private int konamiIndex = 0;
+
+    // ARCH MODE ( no AI just ME )
+    private final int[] archCode = {
+
+        KeyEvent.VK_A,
+        KeyEvent.VK_R,
+        KeyEvent.VK_C,
+        KeyEvent.VK_H,
+        KeyEvent.VK_ENTER
+    };
+
+    private int archIndex = 0;
 
     public YSHWindow() {
 
@@ -48,19 +62,16 @@ public class YSHWindow {
             
             });
         });
+
+        // AWT SYS AND FRAMEWORK 
+
         JFrame frame = new JFrame("YSH v10");
         frame.setSize(850, 550);
-        frame.setDefaultCloseOperation(
-            JFrame.EXIT_ON_CLOSE
-        );
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         terminal = new JTextArea();
-        terminal.setFont(
-            new Font("Consolas", Font.PLAIN, 15)
-        );
+        terminal.setFont(new Font("Consolas", Font.PLAIN, 15));
         terminal.setBackground(Color.BLACK);
-        terminal.setForeground(
-            new Color(0, 255, 70)
-        );
+        terminal.setForeground(new Color(0, 255, 70));
         terminal.setCaretColor(Color.WHITE);
         terminal.setLineWrap(false);
         terminal.setWrapStyleWord(false);
@@ -69,8 +80,9 @@ public class YSHWindow {
             new JScrollPane(terminal),
             BorderLayout.CENTER
         );
-        timeGreeting();
+
         printBanner();
+        timeGreeting();
 
         // KEY LISTENERS 
         terminal.addKeyListener(
@@ -81,215 +93,146 @@ public class YSHWindow {
 
                     if (checkKonami(e.getKeyCode())) {
 
-                        terminal.append(
-                            "\nKonami Code Activated!\n"
-                        );
+                        terminal.append("\nKonami Code Activated!\n");
+                        terminal.append(shell.execute("developer"));
                     
-                        terminal.append(
-                            shell.execute("developer")
-                        );
-                    
-                        if (shell.isDeveloperMode()) {
-                        
+                        if (shell.isDeveloperMode()) {                        
                             printDeveloperBanner();
                         }
                     
-                        printPrompt();
-                    
-                        e.consume();
-                    
+                        printPrompt();                    
+                        e.consume();                    
                         return;
                     }
+                    protectPrompt();
 
+                    if (checkArch(e.getKeyCode())) {
+
+                        terminal.append("\n Arch Mode Activated!\n");
+                        terminal.append(shell.execute("developer")); // developer to arch pending 
+                    
+                        if (shell.isDeveloperMode()) {                        
+                            printDeveloperBanner();
+                        }
+                    
+                        printPrompt();                    
+                        e.consume();                    
+                        return;
+                    }
                     protectPrompt();
 
                     // ENTER
-                    if (e.getKeyCode()
-                        == KeyEvent.VK_ENTER) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 
                         e.consume();
-
                         executeCurrentCommand();
-
                         return;
                     }
 
                     // TAB 
                     if (e.getKeyCode() == KeyEvent.VK_TAB) {
                     
-                        e.consume();
-                    
-                        completeCommand();
-                    
+                        e.consume();                    
+                        completeCommand();                    
                         return;
                     }
 
                     // UP - COMMAND HISTORY
                     if (e.getKeyCode() == KeyEvent.VK_UP) {
                     
-                        e.consume();
-                    
-                        if (!commandHistory.isEmpty()
-                            && historyIndex > 0) {
-                            
-                            historyIndex--;
-                            
-                            replaceCurrentInput(
-                                commandHistory.get(historyIndex)
-                            );
-                        }
-                    
+                        e.consume();                    
+                        if (!commandHistory.isEmpty() && historyIndex > 0) {                            
+
+                            historyIndex--;                            
+                            replaceCurrentInput(commandHistory.get(historyIndex));
+                        }                    
                         return;
                     }
 
                     // DOWN - COMMAND HISTORY
                     if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     
-                        e.consume();
-                    
-                        if (!commandHistory.isEmpty()
-                            && historyIndex
-                                < commandHistory.size() - 1) {
+                        e.consume();                    
+                        if (!commandHistory.isEmpty() && historyIndex < commandHistory.size() - 1) {
                                 
-                            historyIndex++;
-                                
-                            replaceCurrentInput(
-                                commandHistory.get(historyIndex)
-                            );
+                            historyIndex++;                                
+                            replaceCurrentInput(commandHistory.get(historyIndex));
                         
-                        } else {
+                        } 
+
+                        else {
                         
-                            historyIndex =
-                                commandHistory.size();
-                        
+                            historyIndex = commandHistory.size();
                             replaceCurrentInput("");
                         }
-                    
                         return;
                     }
 
                     // CTRL + L TO CLEAR SCREEN 
-                    if (e.isControlDown()
-                        && e.getKeyCode()
-                            == KeyEvent.VK_L) {
-                            
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_L) {
+                        
                         e.consume();
-                            
-                        terminal.setText("");
-                            
-                        printPrompt();
-                            
+                        clearTerminal();
                         return;
                     } 
 
                     // CTRL + UP TO SCROLL UP 
-                    if (e.isControlDown()
-                        && e.getKeyCode()
-                            == KeyEvent.VK_UP) {
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_UP) {
                             
-                        e.consume();
-                            
-                        JScrollPane scrollPane =
-                            (JScrollPane)
-                            SwingUtilities.getAncestorOfClass(
-                                JScrollPane.class,
-                                terminal
-                            );
+                        e.consume();                            
+                        JScrollPane scrollPane = (JScrollPane)SwingUtilities.getAncestorOfClass(JScrollPane.class,terminal);
                         
                         if (scrollPane != null) {
                         
-                            JScrollBar bar =
-                                scrollPane.getVerticalScrollBar();
-                        
-                            bar.setValue(
-                                Math.max(
-                                    bar.getMinimum(),
-                                    bar.getValue() - 50
-                                )
-                            );
+                            JScrollBar bar = scrollPane.getVerticalScrollBar();
+                            bar.setValue(Math.max(bar.getMinimum(),bar.getValue() - 50));
                         }
-                    
                         return;
                     } 
 
                     // CTRL + DOWN TO SCROLL DOWN 
-                    if (e.isControlDown()
-                        && e.getKeyCode()
-                            == KeyEvent.VK_DOWN) {
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_DOWN) {
                             
-                        e.consume();
-                            
-                        JScrollPane scrollPane =
-                            (JScrollPane)
-                            SwingUtilities.getAncestorOfClass(
-                                JScrollPane.class,
-                                terminal
-                            );
+                        e.consume();                            
+                        JScrollPane scrollPane = (JScrollPane)SwingUtilities.getAncestorOfClass(JScrollPane.class,terminal);
                         
                         if (scrollPane != null) {
                         
-                            JScrollBar bar =
-                                scrollPane.getVerticalScrollBar();
-                        
-                            bar.setValue(
-                                Math.min(
-                                    bar.getMaximum(),
-                                    bar.getValue() + 50
-                                )
-                            );
+                            JScrollBar bar = scrollPane.getVerticalScrollBar();                        
+                            bar.setValue(Math.min(bar.getMaximum(),bar.getValue() + 50));
                         }
-                    
                         return;
                     } 
 
                     // CTRL + C TO CANCEL 
-                    if (e.isControlDown()
-                        && e.getKeyCode()
-                            == KeyEvent.VK_C) {
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
                             
                         e.consume();
-                            
                         replaceCurrentInput("");
-                            
                         return;
                     }
 
                     // CTRL + A (to protect the shell) 
-                    if (e.isControlDown()
-                        && e.getKeyCode()
-                            == KeyEvent.VK_A) {
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A) {
                             
                         e.consume();
-                            
-                        terminal.select(
-                            promptPosition,
-                            terminal.getDocument().getLength()
-                        );
-                    
+                        terminal.select(promptPosition,terminal.getDocument().getLength());
                         return;
                     }
 
                     // CTRL + HOME
-                    if (e.isControlDown()
-                            && e.getKeyCode() == KeyEvent.VK_HOME) {
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_HOME) {
                             
-                        e.consume();
-                            
+                        e.consume(); 
                         terminal.setCaretPosition(0);
-                            
                         return;
                     }                    
 
                     // CTRL + END
-                    if (e.isControlDown()
-                            && e.getKeyCode() == KeyEvent.VK_END) {
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_END) {
                             
-                        e.consume();
-                            
-                        terminal.setCaretPosition(
-                            terminal.getDocument().getLength()
-                        );
-                    
+                        e.consume();   
+                        terminal.setCaretPosition(terminal.getDocument().getLength());
                         return;
                     }
 
@@ -297,11 +240,8 @@ public class YSHWindow {
                     if (e.getKeyCode() == KeyEvent.VK_F1) {
                     
                         e.consume();
-                    
                         replaceCurrentInput("help");
-                    
                         executeCurrentCommand();
-                    
                         return;
                     }
 
@@ -309,48 +249,35 @@ public class YSHWindow {
                     if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     
                         e.consume();
-                    
                         replaceCurrentInput("");
-                    
                         return;
                     }
 
                     // BACKSPACE
-                    if (e.getKeyCode()
-                        == KeyEvent.VK_BACK_SPACE) {
+                    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 
-                        if (terminal.getCaretPosition()
-                            <= promptPosition) {
+                        if (terminal.getCaretPosition() <= promptPosition) {
 
                             e.consume();
                         }
-
                         return;
                     }
 
                     // LEFT
-                    if (e.getKeyCode()
-                        == KeyEvent.VK_LEFT) {
+                    if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 
-                        if (terminal.getCaretPosition()
-                            <= promptPosition) {
+                        if (terminal.getCaretPosition() <= promptPosition) {
 
                             e.consume();
                         }
-
                         return;
                     }
 
                     // HOME
-                    if (e.getKeyCode()
-                        == KeyEvent.VK_HOME) {
+                    if (e.getKeyCode() == KeyEvent.VK_HOME) {
 
                         e.consume();
-
-                        terminal.setCaretPosition(
-                            promptPosition
-                        );
-
+                        terminal.setCaretPosition(promptPosition);
                         return;
                     }
                 }
@@ -362,6 +289,7 @@ public class YSHWindow {
         terminal.requestFocusInWindow();
     }
 
+    // TIME GREETING FUNCTION 
     private void timeGreeting() {
 
         int hour = LocalTime.now().getHour();
@@ -370,52 +298,44 @@ public class YSHWindow {
         
             terminal.append(
                 "\n"
-                + "Late Night Session on YSH\n"
-                + "Respect.\n\n"
+                + "_______________________________\n"
+                + "\n"
+                + "  Late Night Session on YSH\n"
+                + "  try 'theme dark'\n"
+                + "  Respect.\n"
+                + "_______________________________\n\n"
             );
+
+            printPrompt();
+            // printBanner();
         }
     }
 
+    // **BANNER FUNCTION** 
     private void printBanner() {
 
-        terminal.append(
-            "YSH - Yousuf Shell [Version v10.GUI]\n"
-        );
-
-        terminal.append(
-            "(c) K.Yousuf\n"
-        );
-
-        terminal.append(
-            "Type 'help' to see available commands\n\n"
-        );
+        terminal.append("YSH - Yousuf Shell [v10 BETA & DEMO]\n");
+        terminal.append("(c) Khaja Yousuf Uddin & Yousuf Shell \n");
+        terminal.append("(!) this version is a used to take a grow into the better file tree - BETA version \n");
+        terminal.append("Type 'help' to see available commands\n\n");
 
         printPrompt();
     }
 
-    // PROMPT 
+    // **PROMPT FUNCTION** 
     private void printPrompt() {
 
-        terminal.append(
-            "YSH " +
-            shell.getCurrentDirectoryName() +
-            " > "
-        );
+        terminal.append("YSH " + shell.getCurrentDirectoryName() +" > ");
     
-        promptPosition =
-            terminal.getDocument().getLength();
-    
-        terminal.setCaretPosition(
-            promptPosition
-        );
+        promptPosition = terminal.getDocument().getLength();
+        terminal.setCaretPosition(promptPosition);
     }
 
     private void executeCurrentCommand() {
 
         try {
 
-            int end =
-                terminal.getDocument().getLength();
+            int end = terminal.getDocument().getLength();
 
             if (end < promptPosition) {
                 return;
@@ -434,7 +354,7 @@ public class YSHWindow {
                     
                 terminal.setText("");
                     
-                printPrompt();
+                printBanner();
                 scrollToBottom();
                     
                 return;
@@ -442,16 +362,12 @@ public class YSHWindow {
 
             if (!command.isEmpty()) {
 
-            if (commandHistory.isEmpty()
-                    || !commandHistory.get(
-                        commandHistory.size() - 1
-                    ).equals(command)) {
+            if (commandHistory.isEmpty() || !commandHistory.get(commandHistory.size() - 1).equals(command)) {
                     
                 commandHistory.add(command);
             }
 
-            historyIndex =
-                commandHistory.size();
+            historyIndex = commandHistory.size();
 
             if (command.equalsIgnoreCase("clear")) {
             
@@ -466,15 +382,13 @@ public class YSHWindow {
 
                 if (commandHistory.isEmpty()) {
                 
-                    terminal.append(
-                        "No command history\n"
-                    );
+                    terminal.append("No command history\n");
                 
-                } else {
+                } 
                 
-                    for (int i = 0;
-                         i < commandHistory.size();
-                         i++) {
+                else {
+                
+                    for (int i = 0; i < commandHistory.size(); i++) {
                         
                         terminal.append(
                             String.format(
@@ -495,9 +409,7 @@ public class YSHWindow {
             // THEME 
             if (command.equalsIgnoreCase("theme")) {
 
-                terminal.append(
-                    "themes: matrix | blue | purple | red | dark | light\n"
-                );
+                terminal.append("themes: matrix | blue | purple | red | dark | light\n");
             
                 printPrompt();
                 scrollToBottom();
@@ -511,11 +423,11 @@ public class YSHWindow {
 
                 if (parts.length < 2) {
                 
-                    terminal.append(
-                        "themes: matrix | blue | purple | red | dark | light\n"
-                    );
+                    terminal.append("themes: matrix | blue | purple | red | dark | light\n");
                 
-                } else {
+                } 
+                
+                else {
                 
                     setTheme(parts[1].trim());
                 }
@@ -525,13 +437,11 @@ public class YSHWindow {
                 return;
             }
         
-            String output =
-                shell.execute(command);
+            String output = shell.execute(command);
 
             terminal.append(output);
 
-            if (command.equalsIgnoreCase("developer")
-                    && shell.isDeveloperMode()) {
+            if (command.equalsIgnoreCase("developer") && shell.isDeveloperMode()) {
                     
                 printDeveloperBanner();
             }
@@ -540,25 +450,22 @@ public class YSHWindow {
             printPrompt();
             scrollToBottom();
 
-        } catch (Exception e) {
+        } 
+        
+        catch (Exception e) {
 
-            terminal.append(
-                "YSH: input error\n"
-            );
+            terminal.append("YSH: input error\n");
 
             printPrompt();
             scrollToBottom();
         }
     }
 
-    private void replaceCurrentInput(
-        String text
-    ) {
+    private void replaceCurrentInput(String text) {
 
         try {
 
-            int end =
-                terminal.getDocument().getLength();
+            int end = terminal.getDocument().getLength();
 
             terminal.getDocument().remove(
                 promptPosition,
@@ -567,12 +474,11 @@ public class YSHWindow {
 
             terminal.append(text);
 
-            terminal.setCaretPosition(
-                terminal.getDocument()
-                        .getLength()
-            );
+            terminal.setCaretPosition(terminal.getDocument().getLength());
 
-        } catch (Exception ignored) {
+        } 
+        
+        catch (Exception ignored) {
 
         }
     } 
@@ -582,11 +488,9 @@ public class YSHWindow {
 
         try {
 
-            int end =
-                terminal.getDocument().getLength();
+            int end = terminal.getDocument().getLength();
 
-            String input =
-                terminal.getText(
+            String input = terminal.getText(
                     promptPosition,
                     end - promptPosition
                 ).trim();
@@ -658,17 +562,16 @@ public class YSHWindow {
 
             for (String cmd : commands) {
 
-                if (cmd.startsWith(
-                        input.toLowerCase()
-                    )) {
+                if (cmd.startsWith(input.toLowerCase())) {
 
                     replaceCurrentInput(cmd);
-
                     return;
                 }
             }
 
-        } catch (Exception ignored) {
+        } 
+        
+        catch (Exception ignored) {
 
         }
     }
@@ -677,15 +580,13 @@ public class YSHWindow {
     public void clearTerminal() {
 
         terminal.setText("");
-        printPrompt();
+        printBanner();
     }
 
     // SCROOL BOTTOM 
     private void scrollToBottom() {
 
-        terminal.setCaretPosition(
-            terminal.getDocument().getLength()
-        );
+        terminal.setCaretPosition(terminal.getDocument().getLength());
     }
 
     // PROMPT PROTECTION 
@@ -693,33 +594,52 @@ public class YSHWindow {
 
         if (terminal.getCaretPosition() < promptPosition) {
 
-            terminal.setCaretPosition(
-                terminal.getDocument().getLength()
-            );
+            terminal.setCaretPosition(terminal.getDocument().getLength());
         }
     }
 
     // KOMANI 
-    private boolean checkKonami(
-        int keyCode
-    ) {
+    private boolean checkKonami(int keyCode) {
 
-        if (keyCode 
-                == konamiCode[konamiIndex]) {
+        if (keyCode == konamiCode[konamiIndex]) {
 
             konamiIndex++;
 
-            if (konamiIndex
-                    == konamiCode.length) {
+            if (konamiIndex == konamiCode.length) {
 
                 konamiIndex = 0;
+                return true;
+            }
+
+        } 
+        
+        else {
+
+            konamiIndex = 0;
+        }
+
+        return false;
+    }
+
+    // ARCH 
+    private boolean checkArch(int archkey) {
+
+        if (archkey == archCode[archIndex]) {
+
+            archIndex++;
+
+            if (archIndex == archCode.length) {
+
+                archIndex = 0;
 
                 return true;
             }
 
-        } else {
+        } 
+        
+        else {
 
-            konamiIndex = 0;
+            archIndex = 0;
         }
 
         return false;
@@ -763,9 +683,8 @@ public class YSHWindow {
                 break;
 
             default:
-                terminal.append(
-                    "themes: matrix | blue | purple | red | dark | light\n"
-                );
+                terminal.append("themes: matrix | blue | purple | red | dark | light\n");
+                terminal.append("upcoming: Translucent | Obuqe | Magenta | Pink - White | Orange - Yellow \n");
                 return;
         }
 
@@ -780,7 +699,9 @@ public class YSHWindow {
             """
             
     ========================================
-            YSH DEVELOPER MODE
+              YSH DEVELOPER MODE
+            BETA VERSION ACTIVATED -
+        SWITCH YOUR VERSION FOR FULL COPY
     ========================================
         
     Developer access enabled.
@@ -794,11 +715,9 @@ public class YSHWindow {
 
         try {
     
-            int end =
-                terminal.getDocument().getLength();
+            int end = terminal.getDocument().getLength();
     
-            String currentInput =
-                terminal.getText(
+            String currentInput = terminal.getText(
                     promptPosition,
                     end - promptPosition
                 );
@@ -808,17 +727,14 @@ public class YSHWindow {
                 end - promptPosition
             );
     
-            terminal.append(
-                "\n" + message + "\n"
-            );
-    
+            terminal.append("\n" + message + "\n");
             printPrompt();
-    
             terminal.append(currentInput);
-    
             scrollToBottom();
     
-        } catch (Exception ignored) {
+        } 
+        
+        catch (Exception ignored) {
     
         }
     }
