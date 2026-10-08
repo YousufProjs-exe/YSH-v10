@@ -73,6 +73,21 @@ public class Shell {
           sysinfo                     Show system information
           whatsup                     YSH status
           check                       Run YSH system check
+
+        THEME 
+          Matrix                      somewhat cybery 
+          Dark                        personal choice 
+          Light                       on your own risk 
+          Pink                        on demand 
+          Magenta                     Acompay 
+          Red                         One of Og 
+          Blue                        Also Og 
+          Purple                      most ignored one 
+          Orange                      Orange 
+
+        MODE 
+          Developer 
+          Arch 
         
         ========================================================
     """;
@@ -83,7 +98,7 @@ public class Shell {
         
             return """
         YSH - Yousuf Shell
-        Version: v10
+        Version: v10 DEMO 
         Engine: Java
         Mode: GUI
         """;
@@ -109,8 +124,7 @@ public class Shell {
                 System.getProperty("os.arch"),
                 System.getProperty("java.version"),
                 System.getProperty("user.name"),
-                Runtime.getRuntime()
-                       .availableProcessors()
+                Runtime.getRuntime().availableProcessors()
             );
         });
 
@@ -215,9 +229,11 @@ public class Shell {
         Shell Engine: OK
         Command Registry: OK
         File System: OK
+        Networkign: Stable 
         GUI: Running
 
         """;
+        // add ip to the netwokring check 
         });
 
         // NOTE
@@ -646,6 +662,9 @@ public class Shell {
         // THEMES 
         registry.register("theme", args -> {
 
+            // cant figure !!! 10+ tries !! 
+            win.setTheme(currentTheme);
+            win.applyTheme();
             if (args.length == 0) {
             
                 return "themes: matrix | blue | purple | red | dark | light\n";

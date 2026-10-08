@@ -18,6 +18,11 @@ public class YSHWindow {
     private int promptPosition;
     private final List<String> commandHistory = new ArrayList<>();
     private int historyIndex = -1;
+    
+    // terminal.setBackground(bgColor);
+    // terminal.setForeground(textColor);
+    // terminal.setCaretColor(textColor);
+
     private Color bgColor = Color.BLACK;
     private Color textColor = new Color(0, 255, 70);
 
@@ -64,12 +69,12 @@ public class YSHWindow {
         });
 
         // AWT SYS AND FRAMEWORK 
-
-        JFrame frame = new JFrame("YSH v10");
-        frame.setSize(850, 550);
+        JFrame frame = new JFrame("YSH v10 DEMO");
+        frame.setSize(760, 470);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         terminal = new JTextArea();
         terminal.setFont(new Font("Consolas", Font.PLAIN, 15));
+        
         terminal.setBackground(Color.BLACK);
         terminal.setForeground(new Color(0, 255, 70));
         terminal.setCaretColor(Color.WHITE);
@@ -81,8 +86,8 @@ public class YSHWindow {
             BorderLayout.CENTER
         );
 
+        applyTheme();
         printBanner();
-        timeGreeting();
 
         // KEY LISTENERS 
         terminal.addKeyListener(
@@ -236,6 +241,15 @@ public class YSHWindow {
                         return;
                     }
 
+                    // CTRL + E to close / exit 
+                    if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_E) {
+                            
+                        e.consume();
+                        replaceCurrentInput("exit");
+                        executeCurrentCommand();
+                        return;
+                    }
+
                     // F1 - HELP
                     if (e.getKeyCode() == KeyEvent.VK_F1) {
                     
@@ -298,8 +312,7 @@ public class YSHWindow {
         
             terminal.append(
                 "\n"
-                + "_______________________________\n"
-                + "\n"
+                + "_______________________________\n\n"
                 + "  Late Night Session on YSH\n"
                 + "  try 'theme dark'\n"
                 + "  Respect.\n"
@@ -313,6 +326,8 @@ public class YSHWindow {
 
     // **BANNER FUNCTION** 
     private void printBanner() {
+
+        timeGreeting();
 
         terminal.append("YSH - Yousuf Shell [v10 BETA & DEMO]\n");
         terminal.append("(c) Khaja Yousuf Uddin & Yousuf Shell \n");
@@ -409,29 +424,7 @@ public class YSHWindow {
             // THEME 
             if (command.equalsIgnoreCase("theme")) {
 
-                terminal.append("themes: matrix | blue | purple | red | dark | light\n");
-            
-                printPrompt();
-                scrollToBottom();
-                return;
-            }
-
-            // TO LOWERCASE 
-            if (command.toLowerCase().startsWith("theme ")) {
-
-                String[] parts = command.split("\\s+", 2);
-
-                if (parts.length < 2) {
-                
-                    terminal.append("themes: matrix | blue | purple | red | dark | light\n");
-                
-                } 
-                
-                else {
-                
-                    setTheme(parts[1].trim());
-                }
-            
+                setTheme(command);
                 printPrompt();
                 scrollToBottom();
                 return;
@@ -483,96 +476,105 @@ public class YSHWindow {
         }
     } 
 
-    // TAB FUNCTION 
+    
+    // COMMAND COMPLETION
     private void completeCommand() {
-
+    
+        String input;
+    
         try {
-
-            int end = terminal.getDocument().getLength();
-
-            String input = terminal.getText(
-                    promptPosition,
-                    end - promptPosition
-                ).trim();
-
-            if (input.contains(" ")) {
-                return;
-            }
-
-            String[] commands = {
-
-                "help",
-                "?",
-                "clear",
-                "cls",
-
-                "echo",
-
-                "pwd",
-                "home",
-                "ls",
-                "dir",
-                "cd",
-
-                "mkdir",
-                "md",
-
-                "touch",
-
-                "rm",
-                "del",
-
-                "cat",
-                "write",
-
-                "rename",
-                "ren",
-
-                "copy",
-                "cp",
-                "paste",
-
-                "move",
-                "search",
-
-                "calc",
-
-                "note",
-
-                "theme",
-
-                "time",
-                "date",
-
-                "history",
-
-                "sysinfo",
-                "whatsup",
-                "check",
-                "version",
-
-                "developer",
-                "devmode",
-
-                "open",
-                "run",
-
-                "exit"
-            };
-
-            for (String cmd : commands) {
-
-                if (cmd.startsWith(input.toLowerCase())) {
-
-                    replaceCurrentInput(cmd);
-                    return;
-                }
-            }
-
-        } 
         
-        catch (Exception ignored) {
-
+            int length = terminal.getDocument().getLength() - promptPosition;
+        
+            input = terminal.getText(promptPosition, length).trim();
+        
+        } catch (Exception e) {
+        
+            return;
+        }
+    
+        if (input.isEmpty()) {
+            return;
+        }
+    
+        String[] commands = {
+        
+            "help",
+            "chat host",
+            "chat join",
+            "mkdir",
+            "touch",
+            "rm",
+            "rename",
+            "copy",
+            "paste",
+            "move",
+            "ls",
+            "search",
+            "cat",
+            "write",
+            "cd",
+            "pwd",
+            "home",
+            "calc",
+            "echo",
+            "clear",
+            "cls",
+            "whatsup",
+            "sysinfo",
+            "theme dark",
+            "theme cyan",
+            "theme red",
+            "theme light",
+            "theme matrix",
+            "theme purple",
+            "theme pink",
+            "theme magenta",
+            "open",
+            "run",
+            "check",
+            "developer",
+            "note",
+            "scan",
+            "msg",
+            "username",
+            "listusers",
+            "kick",
+            "announce",
+            "fileshare host",
+            "fileshare get",
+            "sudo",
+            "whoami",
+            "whocreatedyou",
+            "easteregg",
+            "exit"
+        };
+    
+        ArrayList<String> matches = new ArrayList<>();
+    
+        for (String command : commands) {
+        
+            if (command.startsWith(input)) {
+                matches.add(command);
+            }
+        }
+    
+        if (matches.size() == 1) {
+        
+            replaceCurrentInput(matches.get(0));
+        
+        } else if (matches.size() > 1) {
+        
+            terminal.append("\n");
+        
+            for (String match : matches) {
+                terminal.append(match + "    ");
+            }
+        
+            terminal.append("\n");
+        
+            printPrompt();
+            replaceCurrentInput(input);
         }
     }
 
@@ -608,7 +610,7 @@ public class YSHWindow {
             if (konamiIndex == konamiCode.length) {
 
                 konamiIndex = 0;
-                return true;
+                return  true;
             }
 
         } 
@@ -646,7 +648,7 @@ public class YSHWindow {
     }
 
     // THEMES SYSTEM / FUNCTION 
-    private void setTheme(String theme) {
+    public  void setTheme(String theme) {
 
         switch (theme.toLowerCase()) {
 
@@ -682,12 +684,27 @@ public class YSHWindow {
                 textColor = Color.BLACK;
                 break;
 
+            case "pink":
+                bgColor = Color.pink; 
+                textColor = Color.CYAN;
+
+            case "magenta":
+                bgColor = Color.MAGENTA;
+                textColor = Color.DARK_GRAY;
+            
+
             default:
                 terminal.append("themes: matrix | blue | purple | red | dark | light\n");
                 terminal.append("upcoming: Translucent | Obuqe | Magenta | Pink - White | Orange - Yellow \n");
                 return;
         }
 
+        applyTheme();
+    }
+
+    // APPLY THEME - needed v8 refff 
+    public void applyTheme(){
+        
         terminal.setBackground(bgColor);
         terminal.setForeground(textColor);
         terminal.setCaretColor(textColor);

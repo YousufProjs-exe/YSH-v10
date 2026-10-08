@@ -7,8 +7,7 @@ import java.util.function.Function;
 
 public class CommandRegistry {
 
-    private final Map<String, Function<String[], String>> commands =
-        new HashMap<>();
+    private final Map<String, Function<String[], String>> commands = new HashMap<>();
 
     public void register(
         String name,
@@ -19,8 +18,7 @@ public class CommandRegistry {
 
     public String execute(Command command) {
 
-        Function<String[], String> action =
-            commands.get(command.getName());
+        Function<String[], String> action = commands.get(command.getName());
 
         if (action == null) {
             return null;
