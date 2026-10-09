@@ -522,6 +522,7 @@ public class YSHWindow {
             "cls",
             "whatsup",
             "sysinfo",
+            "theme",
             "theme dark",
             "theme cyan",
             "theme red",
@@ -536,7 +537,7 @@ public class YSHWindow {
             "developer",
             "note",
             "scan",
-            "msg",
+            "msg ",
             "username",
             "listusers",
             "kick",
@@ -568,6 +569,7 @@ public class YSHWindow {
             terminal.append("\n");
         
             for (String match : matches) {
+
                 terminal.append(match + "    ");
             }
         
@@ -705,6 +707,8 @@ public class YSHWindow {
     // APPLY THEME - needed v8 refff 
     public void applyTheme(){
         
+        // adding colors to before main somewhere , hm 
+
         terminal.setBackground(bgColor);
         terminal.setForeground(textColor);
         terminal.setCaretColor(textColor);
@@ -720,7 +724,8 @@ public class YSHWindow {
             BETA VERSION ACTIVATED -
         SWITCH YOUR VERSION FOR FULL COPY
     ========================================
-        
+    
+    Recommened v8 or higher for full experience.
     Developer access enabled.
     Build. Break. Learn. Repeat.
         
