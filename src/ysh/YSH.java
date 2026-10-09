@@ -9,6 +9,8 @@
 
 */
 
+// IF YOU WANT TO CONTRIBUTE TO YSH - 
+// search help me and you will find comments where YSH v10 build is needed.
 package ysh;
 
 import javax.swing.SwingUtilities;

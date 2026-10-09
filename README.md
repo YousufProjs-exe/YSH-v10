@@ -6,6 +6,9 @@ AI is only used for Networking setup help
  with constat updates and support. 
 
 
+ - IF YOU WANT TO CONTRIBUTE TO YSH - 
+ search help me and you will find comments where YSH v10 build is needed.
+
     Remove-Item out -Recurse -Force -ErrorAction SilentlyContinue
     javac -d out (Get-ChildItem src -Recurse -Filter *.java).FullName
     java -cp out ysh.YSH

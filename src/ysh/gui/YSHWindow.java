@@ -10,7 +10,8 @@ import java.time.LocalTime;
 
 import ysh.core.Shell;
 
-
+// shortcut for network messages to be displayed in the terminal without interfering with user input. 
+// It temporarily removes the current input, displays the message, and then restores the input.
 public class YSHWindow {
 
     private final Shell shell;
@@ -19,6 +20,7 @@ public class YSHWindow {
     private final List<String> commandHistory = new ArrayList<>();
     private int historyIndex = -1;
     
+    // you can help me solve this. 
     // terminal.setBackground(bgColor);
     // terminal.setForeground(textColor);
     // terminal.setCaretColor(textColor);
@@ -44,7 +46,7 @@ public class YSHWindow {
 
     private int konamiIndex = 0;
 
-    // ARCH MODE ( no AI just ME )
+    // ARCH MODE ( no AI just ME ) 
     private final int[] archCode = {
 
         KeyEvent.VK_A,
@@ -311,8 +313,7 @@ public class YSHWindow {
         if (hour >= 0 && hour < 5) {
         
             terminal.append(
-                "\n"
-                + "_______________________________\n\n"
+                "\n_______________________________\n\n"
                 + "  Late Night Session on YSH\n"
                 + "  try 'theme dark'\n"
                 + "  Respect.\n"
@@ -364,8 +365,7 @@ public class YSHWindow {
 
             terminal.append("\n");
 
-            if (command.equalsIgnoreCase("clear")
-                    || command.equalsIgnoreCase("cls")) {
+            if (command.equalsIgnoreCase("clear") || command.equalsIgnoreCase("cls")) {
                     
                 terminal.setText("");
                     
@@ -417,7 +417,7 @@ public class YSHWindow {
             
                 printPrompt();
                 scrollToBottom();
-            
+
                 return;
             }
 
@@ -427,6 +427,7 @@ public class YSHWindow {
                 setTheme(command);
                 printPrompt();
                 scrollToBottom();
+
                 return;
             }
         
@@ -466,7 +467,6 @@ public class YSHWindow {
             );
 
             terminal.append(text);
-
             terminal.setCaretPosition(terminal.getDocument().getLength());
 
         } 
@@ -485,7 +485,6 @@ public class YSHWindow {
         try {
         
             int length = terminal.getDocument().getLength() - promptPosition;
-        
             input = terminal.getText(promptPosition, length).trim();
         
         } catch (Exception e) {
@@ -502,27 +501,27 @@ public class YSHWindow {
             "help",
             "chat host",
             "chat join",
-            "mkdir",
-            "touch",
-            "rm",
-            "rename",
-            "copy",
-            "paste",
-            "move",
+            "mkdir ",
+            "touch ",
+            "rm ",
+            "rename ",
+            "copy ",
+            "paste ",
+            "move ",
             "ls",
-            "search",
-            "cat",
-            "write",
-            "cd",
+            "search ",
+            "cat ",
+            "write ",
+            "cd ",
             "pwd",
             "home",
-            "calc",
-            "echo",
+            "calc ",
+            "echo ",
             "clear",
             "cls",
             "whatsup",
             "sysinfo",
-            "theme",
+            "theme ",
             "theme dark",
             "theme cyan",
             "theme red",
@@ -531,8 +530,8 @@ public class YSHWindow {
             "theme purple",
             "theme pink",
             "theme magenta",
-            "open",
-            "run",
+            "open ",
+            "run ",
             "check",
             "developer",
             "note",
@@ -540,8 +539,8 @@ public class YSHWindow {
             "msg ",
             "username",
             "listusers",
-            "kick",
-            "announce",
+            "kick ",
+            "announce ",
             "fileshare host",
             "fileshare get",
             "sudo",
@@ -635,7 +634,6 @@ public class YSHWindow {
             if (archIndex == archCode.length) {
 
                 archIndex = 0;
-
                 return true;
             }
 
@@ -686,6 +684,7 @@ public class YSHWindow {
                 textColor = Color.BLACK;
                 break;
 
+            // help me solve this too 
             case "pink":
                 bgColor = Color.pink; 
                 textColor = Color.CYAN;
@@ -713,6 +712,8 @@ public class YSHWindow {
         terminal.setForeground(textColor);
         terminal.setCaretColor(textColor);
     }
+
+    // Additional Context: These are recently edited files. Do not suggest code that has been deleted.
 
     private void printDeveloperBanner() {
 
