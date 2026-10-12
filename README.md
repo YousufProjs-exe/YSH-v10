@@ -1,24 +1,4 @@
-# YSH-v10
-
-AI is only used for Networking setup help 
- 
- try YSH v8 - its actually one of the best ! 
- with constat updates and support. 
-
-
- - IF YOU WANT TO CONTRIBUTE TO YSH - 
- search help me and you will find comments where YSH v10 build is needed.
-
-    Remove-Item out -Recurse -Force -ErrorAction SilentlyContinue
-    javac -d out (Get-ChildItem src -Recurse -Filter *.java).FullName
-    java -cp out ysh.YSH
-
-    to Compile / Execute and Run / Use 
-
-
-is just a BETA version to test and try the upcoming YSH like v11 and expected perfect v12 or v13 
-
-# YSH — Yousuf Shell v8 
+# YSH — Yousuf Shell v10 
 
 # Built, not generated
 YSH has evolved through multiple versions.
@@ -35,7 +15,7 @@ YSH has evolved through multiple versions.
 A Java-based graphical shell built from scratch with real filesystem operations, LAN networking, customization, and developer-focused features.
 **YSH v8.GUI** is a major version of YSH, combining a terminal-style graphical interface with real filesystem interaction, LAN communication, file sharing, command history, themes, developer mode, and various built-in utilities.
 
-![YSH v8 GUI](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/YSH%20v8.png)
+![YSH v10 GUI](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/YSH%20v8.png)
 
 ## Test ? 
 try commadns - 
@@ -60,7 +40,7 @@ try commadns -
 - run "app"
 - sysinfo
 
-and theres more to explore - Take it your home: [YSH-v8](https://github.com/YousufProjs-exe/YSH-v8/releases/)
+and theres more to explore - Take it your home: [YSH-v10](https://github.com/YousufProjs-exe/YSH-v8/releases/)
 
 ## Features
 
@@ -90,21 +70,21 @@ and theres more to explore - Take it your home: [YSH-v8](https://github.com/Yous
 ### Main Interface
 "The terminal as a system."
 
-![YSH v8 main interface](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/YSH%20v8.png)
+![YSH v10 main interface](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/YSH%20v8.png)
 
 ### Themes
 "Make YSH yours."
 
-![YSH v8 themes](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/NICE%20YSH.png)
+![YSH v10 themes](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/NICE%20YSH.png)
 
 ### Message for You 
 "Some builds happen late."
 
-![YSH v8 LATE NIGHT](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/LATE%20NIGHT.png)
+![YSH v10 LATE NIGHT](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/LATE%20NIGHT.png)
 
 "For Developers."
 
-![YSH v8 MODES](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/developer%20mode.png)
+![YSH v10 MODES](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/developer%20mode.png)
 
 ## Getting Started
 
@@ -118,7 +98,7 @@ Alternatively, compile the source with Java 17 and launch the main class.
 
 ## Networking (makes it even Cool and Unique)
 
-YSH v8 includes LAN networking features for communication between YSH instances on the same network.
+YSH v10 includes LAN networking features for communication between YSH instances on the same network.
 
 Supported functionality includes:
 
@@ -133,11 +113,11 @@ Supported functionality includes:
 * Sending announcements and 
 * Share files (text only)
 
-## Project (v8 actually)
+## Project (v10 actually)
 
 YSH began as a command-line shell project and gradually evolved into a graphical shell with filesystem access, networking, utilities, and its own interface.
 
-**v8** represents one of the major steps in that evolution before the modular architecture introduced in later versions.
+**v10** represents one of the major steps in that evolution before the modular architecture introduced in later versions.
 
 Just another masterpiece by Yousuf 
 
