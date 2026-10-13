@@ -17,7 +17,6 @@ public class YSHWindow {
     private final Shell shell;
     private JTextArea terminal;
     private int promptPosition;
-    private final List<String> commandHistory = new ArrayList<>();
     private int historyIndex = -1;
     
     // you can help me solve this. 
@@ -104,9 +103,6 @@ public class YSHWindow {
                         terminal.append("\nKonami Code Activated!\n");
                         terminal.append(shell.execute("developer"));
                     
-                        if (shell.isDeveloperMode()) {                        
-                            printDeveloperBanner();
-                        }
                     
                         printPrompt();                    
                         e.consume();                    
@@ -119,9 +115,7 @@ public class YSHWindow {
                         terminal.append("\n Arch Mode Activated!\n");
                         terminal.append(shell.execute("developer")); // developer to arch pending 
                     
-                        if (shell.isDeveloperMode()) {                        
-                            printDeveloperBanner();
-                        }
+                        
                     
                         printPrompt();                    
                         e.consume();                    
@@ -148,29 +142,27 @@ public class YSHWindow {
                     // UP - COMMAND HISTORY
                     if (e.getKeyCode() == KeyEvent.VK_UP) {
                     
-                        e.consume();                    
-                        if (!commandHistory.isEmpty() && historyIndex > 0) {                            
+                        List<String> history = shell.getCommandHistory();
 
-                            historyIndex--;                            
-                            replaceCurrentInput(commandHistory.get(historyIndex));
-                        }                    
+                        if (!history.isEmpty() && historyIndex > 0) {
+                            historyIndex--;
+                            replaceCurrentInput(history.get(historyIndex));
+                        }
                         return;
                     }
 
                     // DOWN - COMMAND HISTORY
                     if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     
-                        e.consume();                    
-                        if (!commandHistory.isEmpty() && historyIndex < commandHistory.size() - 1) {
-                                
-                            historyIndex++;                                
-                            replaceCurrentInput(commandHistory.get(historyIndex));
-                        
-                        } 
+                        List<String> history = shell.getCommandHistory();
 
+                        if (!history.isEmpty() && historyIndex < history.size() - 1) {
+                            historyIndex++;
+                            replaceCurrentInput(history.get(historyIndex));
+                        } 
+                            
                         else {
-                        
-                            historyIndex = commandHistory.size();
+                            historyIndex = history.size();
                             replaceCurrentInput("");
                         }
                         return;
@@ -348,104 +340,45 @@ public class YSHWindow {
         terminal.setCaretPosition(promptPosition);
     }
 
-    private void executeCurrentCommand() {
+private void executeCurrentCommand() {
+    try {
+        int end = terminal.getDocument().getLength();
 
-        try {
+        if (end < promptPosition) {
+            return;
+        }
 
-            int end = terminal.getDocument().getLength();
+        String command = terminal.getText(
+            promptPosition,
+            end - promptPosition
+        ).trim();
 
-            if (end < promptPosition) {
-                return;
-            }
+        terminal.append("\n");
 
-            String command =
-                terminal.getText(
-                    promptPosition,
-                    end - promptPosition
-                ).trim();
+        if (!command.isEmpty()) {
+            shell.recordCommand(command);
+            historyIndex = shell.getCommandHistory().size();
 
-            terminal.append("\n");
-
-            if (command.equalsIgnoreCase("clear") || command.equalsIgnoreCase("cls")) {
-                    
-                terminal.setText("");
-                    
-                printBanner();
-                scrollToBottom();
-                    
-                return;
-            }
-
-            if (!command.isEmpty()) {
-
-            if (commandHistory.isEmpty() || !commandHistory.get(commandHistory.size() - 1).equals(command)) {
-                    
-                commandHistory.add(command);
-            }
-
-            historyIndex = commandHistory.size();
-
-            if (command.equalsIgnoreCase("clear")) {
-            
-                terminal.setText("");
-                printPrompt();
-                scrollToBottom();
-                return;
-            }
-
-            // HISTORY 
-            if (command.equalsIgnoreCase("history")) {
-
-                if (commandHistory.isEmpty()) {
-                
-                    terminal.append("No command history\n");
-                
-                } 
-                
-                else {
-                
-                    for (int i = 0; i < commandHistory.size(); i++) {
-                        
-                        terminal.append(
-                            String.format(
-                                "%3d  %s%n",
-                                i + 1,
-                                commandHistory.get(i)
-                            )
-                        );
-                    }
-                }
-            
-                printPrompt();
-                scrollToBottom();
-
-                return;
-            }
-        
             String output = shell.execute(command);
 
-            terminal.append(output);
-
-            if (command.equalsIgnoreCase("developer") && shell.isDeveloperMode()) {
-                    
-                printDeveloperBanner();
+            if ("__YSH_CLEAR__".equals(output)) {
+                clearTerminal();
+                scrollToBottom();
+                return;
             }
+
+            terminal.append(output);
         }
 
-            printPrompt();
-            scrollToBottom();
+        printPrompt();
+        scrollToBottom();
 
-        } 
-        
-        catch (Exception e) {
-
-            terminal.append("YSH: input error\n");
-
-            printPrompt();
-            scrollToBottom();
-        }
+    } catch (Exception e) {
+        terminal.append("YSH: input error\n");
+        printPrompt();
+        scrollToBottom();
     }
-
+}
     private void replaceCurrentInput(String text) {
 
         try {
@@ -717,24 +650,7 @@ public class YSHWindow {
 
     // Additional Context: These are recently edited files. Do not suggest code that has been deleted.
 
-    private void printDeveloperBanner() {
 
-        terminal.append(
-            """
-            
-    ========================================
-              YSH DEVELOPER MODE
-            BETA VERSION ACTIVATED -
-        SWITCH YOUR VERSION FOR FULL COPY
-    ========================================
-    
-    Recommened v8 or higher for full experience.
-    Developer access enabled.
-    Build. Break. Learn. Repeat.
-        
-    """
-        );
-    }
 
     private void showNetworkMessage(String message) {
 

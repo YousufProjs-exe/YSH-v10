@@ -8,6 +8,8 @@ import ysh.calculator.ExpressionCalculator;
 import network.NetworkManager;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.awt.Desktop;
@@ -22,6 +24,24 @@ public class Shell {
         this.win = window;
     }
 
+    public void recordCommand(String input) {
+        if (input == null || input.isBlank()) {
+            return;
+        }
+
+        String command = input.trim();
+
+        if (commandHistory.isEmpty()
+                || !commandHistory.get(commandHistory.size() - 1).equals(command)) {
+            commandHistory.add(command);
+        }
+    }
+
+    public List<String> getCommandHistory() {
+        return List.copyOf(commandHistory);
+    }
+
+
     private final CommandParser parser;
     private final CommandRegistry registry;
     private final FileSystem fileSystem;
@@ -29,6 +49,7 @@ public class Shell {
     private final ExpressionCalculator calculator;
     private final NetworkManager networkManager;
     private boolean developerMode = false;
+    private final List<String> commandHistory = new ArrayList<>();
 
     public Shell() {
 
@@ -94,6 +115,22 @@ public class Shell {
         
         ========================================================
     """;
+        });
+
+        registry.register("history", args -> {
+            if (commandHistory.isEmpty()) {
+                return "No command history\n";
+            }
+        
+            StringBuilder output = new StringBuilder();
+        
+            for (int i = 0; i < commandHistory.size(); i++) {
+                output.append(
+                    String.format("%3d  %s%n", i + 1, commandHistory.get(i))
+                );
+            }
+        
+            return output.toString();
         });
 
         // VERSION
@@ -576,13 +613,11 @@ public class Shell {
         });
 
         // CLEAR
-        registry.register("clear", args -> {  
+        registry.register("clear", args -> "__YSH_CLEAR__");
 
-            // win object for clearterminal()
-            win.clearTerminal();
-            return "__YSH_CLEAR__";
-        });
-
+        registry.register("cls", args ->
+            registry.execute(new Command("clear", args))
+        );
         // TIME 
         registry.register("time", args -> {
         
