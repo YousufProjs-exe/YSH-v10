@@ -29,7 +29,6 @@ public class Shell {
     private final ExpressionCalculator calculator;
     private final NetworkManager networkManager;
     private boolean developerMode = false;
-    private String currentTheme = "black";
 
     public Shell() {
 
@@ -679,7 +678,6 @@ public class Shell {
                 return "theme: unknown theme '" + selected + "'\n";
             }
         
-            currentTheme = selected;
             return "theme changed to " + selected + "\n";
         });
 
