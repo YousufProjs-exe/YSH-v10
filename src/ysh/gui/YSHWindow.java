@@ -19,7 +19,7 @@ public class YSHWindow {
     private int promptPosition;
     private int historyIndex = -1;
     
-    // you can help me solve this. 
+    // you can help me solve this.   - solved now :) 
     // terminal.setBackground(bgColor);
     // terminal.setForeground(textColor);
     // terminal.setCaretColor(textColor);
