@@ -315,33 +315,32 @@ public class YSHWindow {
 
     // TIME GREETING FUNCTION 
     private void timeGreeting() {
-
         int hour = LocalTime.now().getHour();
-        
-        if (hour >= 0 && hour < 5) {
-        
-            terminal.append(
-                "\n_______________________________\n\n"
-                + "  Late Night Session on YSH\n"
-                + "  try 'theme dark'\n"
-                + "  Respect.\n"
-                + "_______________________________\n\n"
-            );
 
-            printPrompt();
-            // printBanner();
+        if (hour < 5) {
+            terminal.append("""
+
+                ______________________________
+
+                    Late Night Session on YSH
+                    Respect.
+                    also try "theme dark"
+                ______________________________
+
+                """);
         }
+        // unc-e
+        // printBanner();
+        // printPrompt
     }
 
     // **BANNER FUNCTION** 
     private void printBanner() {
-
         timeGreeting();
 
-        terminal.append("YSH - Yousuf Shell [v10 BETA & DEMO]\n");
-        terminal.append("(c) Khaja Yousuf Uddin & Yousuf Shell \n");
-        terminal.append("(!) this version is a used to take a grow into the better file tree - BETA version \n");
-        terminal.append("Type 'help' to see available commands\n\n");
+        terminal.append("YSH - Yousuf Shell [v10 BETA]\n");
+        terminal.append("(c) Khaja Yousuf Uddin & Yousuf Shell\n");
+        terminal.append("Type 'help' to see available commands.\n\n");
 
         printPrompt();
     }
@@ -349,7 +348,7 @@ public class YSHWindow {
     // **PROMPT FUNCTION** 
     private void printPrompt() {
         String prompt;
-        
+
         if (shell.isArchMode()) {
             prompt = "arch@" + shell.getCurrentDirectoryName() + " $ ";
         } else if (shell.isDeveloperMode()) {
@@ -357,7 +356,7 @@ public class YSHWindow {
         } else {
             prompt = "YSH " + shell.getCurrentDirectoryName() + " > ";
         }
-    
+
         terminal.append(prompt);
         promptPosition = terminal.getDocument().getLength();
         terminal.setCaretPosition(promptPosition);
