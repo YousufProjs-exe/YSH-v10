@@ -1,6 +1,7 @@
-# YSH — Yousuf Shell v10 
+# YSH — Yousuf Shell v10
 
 # Built, not generated
+
 YSH has evolved through multiple versions.
 
 * <a href="https://yousufprojs-exe.github.io/YSH-WEBSITE/"><i>YSH About Website</i></a>
@@ -8,55 +9,73 @@ YSH has evolved through multiple versions.
 * <a href="https://github.com/YousufProjs-exe/YSH-GUI/"><i>YSH-GUI v5 [First GUI]</i></a>
 * <a href="https://github.com/YousufProjs-exe/YSH"><i>YSH v7</i></a>
 * <a href="https://github.com/YousufProjs-exe/YSH-v8"><i>YSH v8</i></a>
-- <a href="https://github.com/YousufProjs-exe/YSH-v10"><i>YSH v10 [ In Developement ]</i></a>
+* <a href="https://github.com/YousufProjs-exe/YSH-v10"><i>YSH v10</i></a>
 
-### <a href="https://github.com/YousufProjs-exe/YSH-v8/releases/tag/v8.1.4"><i>Try latest YSH</i></a>
+#### <a href="https://github.com/YousufProjs-exe/YSH-v10/releases"><i>Try YSH v10</i></a>
 
-A Java-based graphical shell built from scratch with real filesystem operations, LAN networking, customization, and developer-focused features.
-**YSH v8.GUI** is a major version of YSH, combining a terminal-style graphical interface with real filesystem interaction, LAN communication, file sharing, command history, themes, developer mode, and various built-in utilities.
+A Java-based graphical shell built from scratch with real filesystem operations, LAN chat, themes and developer features.
+
+YSH v10 continues the project with a command registry, command parsing, filesystem utilities, networking and its own terminal interface.
 
 ![YSH v10 GUI](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/YSH%20v8.png)
 
-## Test ? 
-try commadns - 
-[ TAB completes commands , Arrow up and down rewinds the commadns ]
+## Test ?
 
-* help 
-- pwd
-- developer 
-- mkdir "name"
-- cd "name"
-- scan
-- chat host 
-- chat join "ip"
-- msg "text"
-- fileshare host 
-- fileshare get "ip" "file name" 
-- note
-  then : add || view || list
-- calc 
-- theme matrix 
-- easteregg 
-- run "app"
-- sysinfo
+try commands -
 
-and theres more to explore - Take it your home: [YSH-v10](https://github.com/YousufProjs-exe/YSH-v8/releases/)
+[ TAB completes commands, Arrow up and down rewinds the commands ]
+
+* help
+* pwd
+* ls
+* developer
+* arch                                      - v10 presents
+* mkdir "name"
+* cd "name"
+* touch "file name"
+* cat "file name"
+* write "file name" "text"
+* rename "old name" "new name"
+* copy "name"
+* paste
+* move "file" "folder"
+* search "name"
+* tree                                      - v10  
+* head "file"                               - v10  
+* tail "file"                               - v10  
+* open "file"
+* note add "name" "text"                    - v10  
+* note list 
+* note view "name"                          - v10  
+* calc 2+2 
+* theme pink                                - v10  
+* theme orange                              - v10  
+* theme magenta                             - v10  
+* sysinfo
+* date
+* time
+* history                                   - v10  
+
+### v10 is YSHs major as from v10 YSH is divided into several individual files rather than just one single one.
+
+and theres more to explore - Take it your home: [YSH-v10](https://github.com/YousufProjs-exe/YSH-v10/releases/)
 
 ## Features
 
 * Real filesystem navigation and file operations
 * Graphical terminal interface
 * LAN chat and group communication
-* LAN file sharing
-* User management and announcements
-* Command history and command completion
+* Hosting and joining chat rooms
+* User names, announcements and user management
+* Command history and TAB completion
 * Multiple terminal themes
-* Developer mode
+* Developer Mode
+* Arch Mode
 * Built-in calculator and notes
-* System information
+* System information and status checks
 * Search, tree, head and tail utilities
-* Konami code and other Easter eggs
-* Time-sensitive greetings and shell customization
+* Konami code achievement
+* Time-sensitive greetings
 
 ## Built With
 
@@ -68,58 +87,51 @@ and theres more to explore - Take it your home: [YSH-v10](https://github.com/You
 ## Screenshots
 
 ### Main Interface
+
 "The terminal as a system."
 
 ![YSH v10 main interface](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/YSH%20v8.png)
 
 ### Themes
+
 "Make YSH yours."
 
-![YSH v10 themes](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/NICE%20YSH.png)
+![YSH themes](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/NICE%20YSH.png)
 
-### Message for You 
+### Message for You
+
 "Some builds happen late."
 
-![YSH v10 LATE NIGHT](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/LATE%20NIGHT.png)
+![YSH late night](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/LATE%20NIGHT.png)
 
 "For Developers."
 
-![YSH v10 MODES](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/developer%20mode.png)
+![YSH developer mode](https://github.com/YousufProjs-exe/YSH-v8/blob/main/YSH-SS/developer%20mode.png)
 
-## Getting Started
-
-### Requirements 
-
-* Java 17 or later
-* Windows, Linux, or another Java-supported platform
-
-
-Alternatively, compile the source with Java 17 and launch the main class.
 
 ## Networking (makes it even Cool and Unique)
 
-YSH v10 includes LAN networking features for communication between YSH instances on the same network.
+YSH v10 includes LAN chat between YSH instances.
 
-Supported functionality includes:
+* Set your name with `name "username"`
+* Host a chat room with `host`
+* Join a room with `connect "ip"`
+* Send messages with `msg "text"`
+* List connected users with `listusers`
+* Send announcements with `announce "message"`
+* Remove a user with `kick "username"`
+* Leave a room with `disconnect`
+* Stop hosting with `stophost`
 
-* IP Scan
-* No mater what version of YSH you use Everyone is equal
-* Hosting a chat server
-* or joining one 
-* Connecting to another YSH host 
-* or Sending messages
-* Listing connected users
-* or Kicking them 
-* Sending announcements and 
-* Share files (text only)
+Default port: `6000`
 
 ## Project (v10 actually)
 
 YSH began as a command-line shell project and gradually evolved into a graphical shell with filesystem access, networking, utilities, and its own interface.
 
-**v10** represents one of the major steps in that evolution before the modular architecture introduced in later versions.
+YSH v10 continues that evolution with a more modular command system.
 
-Just another masterpiece by Yousuf 
+Just another masterpiece by Yousuf
 
-- Try Web: [yshweb.netlify.app](https://yshweb.netlify.app/)   ||  
-- Take it your home: [YSH-v8](https://github.com/YousufProjs-exe/YSH-v8/releases/)
+- Try Web: [yshweb.netlify.app](https://yshweb.netlify.app/) ||
+- Take it your home: [YSH-v10](https://github.com/YousufProjs-exe/YSH-v10/releases/)
