@@ -69,7 +69,6 @@ public class ExpressionCalculator {
             else if (operator == '/') {
 
                 position++;
-
                 double divisor = parseFactor();
 
                 if (divisor == 0) {
@@ -134,10 +133,7 @@ public class ExpressionCalculator {
 
             } 
             
-            else {
-
-                break;
-            }
+            else break;
         }
 
         if (start == position) {
