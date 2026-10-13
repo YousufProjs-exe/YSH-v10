@@ -658,28 +658,34 @@ public class Shell {
     // SHELL ENTRY POINT
 
     public String execute(String input) {
-        Command command = parser.parse(input);
-
+        Command command;
+    
+        try {
+            command = parser.parse(input);
+        } catch (IllegalArgumentException e) {
+            return "YSH: " + e.getMessage() + "\n";
+        }
+    
         if (command == null) {
             return "";
         }
-
+    
         String trimmed = input.trim();
-
+    
         if (commandHistory.isEmpty()
                 || !commandHistory.get(commandHistory.size() - 1).equals(trimmed)) {
             commandHistory.add(trimmed);
         }
-
+    
         String result = registry.execute(command);
-
+    
         if (result == null) {
             return "YSH: command not found: " + command.getName() + "\n";
         }
-
+    
         return result;
     }
-
+    
     private String joinArgs(String[] args, int start) {
         if (start >= args.length) {
             return "";
@@ -695,58 +701,58 @@ public class Shell {
         if (input == null || input.isBlank()) {
             return List.of();
         }
-    
+
         boolean trailingSpace =
                 Character.isWhitespace(input.charAt(input.length() - 1));
-    
+
         String text = input.trim();
         int separator = text.indexOf(' ');
-    
+
         if (separator < 0) {
             String prefix = text.toLowerCase(Locale.ROOT);
-        
+
             if (prefix.equals("theme")) {
                 return themeCompletions("");
             }
-        
+
             if (prefix.equals("note")) {
                 return noteCompletions("");
             }
-        
+
             List<String> matches = new ArrayList<>();
-        
+
             for (String name : registry.getCommandNames()) {
                 if (name.startsWith(prefix)) {
                     matches.add(name);
                 }
             }
-        
+
             matches.sort(String.CASE_INSENSITIVE_ORDER);
             return matches;
         }
-    
+
         if (trailingSpace) {
             return List.of();
         }
-    
+
         String command =
                 text.substring(0, separator).toLowerCase(Locale.ROOT);
         String prefix = text.substring(separator + 1).toLowerCase(Locale.ROOT);
-    
+
         if (command.equals("theme") && !prefix.contains(" ")) {
             return themeCompletions(prefix);
         }
-    
+
         if (command.equals("note") && !prefix.contains(" ")) {
             return noteCompletions(prefix);
         }
-    
+
         return List.of();
     }
-    
+
     private List<String> themeCompletions(String prefix) {
         List<String> matches = new ArrayList<>();
-    
+
         for (String theme : new String[]{
                 "black", "matrix", "blue", "cyan", "purple",
                 "red", "dark", "light", "pink", "magenta", "orange"
@@ -755,13 +761,13 @@ public class Shell {
                 matches.add("theme " + theme);
             }
         }
-    
+
         return matches;
     }
-    
+
     private List<String> noteCompletions(String prefix) {
         List<String> matches = new ArrayList<>();
-    
+
         for (String action : new String[]{
                 "add", "list", "view", "delete", "clear"
         }) {
@@ -769,7 +775,7 @@ public class Shell {
                 matches.add("note " + action);
             }
         }
-    
+
         return matches;
     }
 }
