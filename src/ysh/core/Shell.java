@@ -60,6 +60,10 @@ public class Shell {
         return developerMode;
     }
 
+    public boolean isArchMode() {
+        return archMode;
+    }
+
     public List<String> getCommandHistory() {
         return List.copyOf(commandHistory);
     }
@@ -540,8 +544,9 @@ public class Shell {
 
     private String commandDeveloper(String[] args) {
         developerMode = !developerMode;
-
+        
         if (developerMode) {
+            archMode = false;
             return developerModeBanner();
         }
 
@@ -576,22 +581,44 @@ public class Shell {
     }
 
     public String activateDeveloperMode() {
+        archMode = false;
         developerMode = true;
         return developerModeBanner();
     }
 
     private String commandArch(String[] args) {
         archMode = !archMode;
+        // developerMode = false;
 
         if (archMode) {
-            return """
-                ARCH MODE ENABLED
-                No shortcuts. No AI. Just you and your code.
-                Build. Learn. Understand.
-                """;
+            developerMode = false;
+            return archModeBanner();
         }
 
-        return "Arch Mode Disabled\n";
+        return "Arch Mode disabled.\n";
+    }
+
+    private String archModeBanner() {
+        // THIS IS 100% ME PLEASE DONT SAY AI ! 
+        return """
+
+                 / \\   
+                /   \\       YSH TERMINAL v10
+               / / \\\\     __    __     Arch Mode
+              / \\ //\\    |__|  |                               
+             /_/     \\\\  | \\  |__
+
+            ______________________________
+
+            Status : Ready
+            Shell  : YSH v10
+            Mode   : ARCH
+            Session: Local
+
+            Type 'help' or continue anyways.
+            ______________________________
+
+            """;
     }
 
     // THEME COMMAND

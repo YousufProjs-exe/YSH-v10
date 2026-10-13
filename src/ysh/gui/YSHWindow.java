@@ -348,10 +348,16 @@ public class YSHWindow {
 
     // **PROMPT FUNCTION** 
     private void printPrompt() {
-        String prompt = shell.isDeveloperMode()
-            ? ">_ "
-            : "YSH " + shell.getCurrentDirectoryName() + " > ";
-
+        String prompt;
+        
+        if (shell.isArchMode()) {
+            prompt = "arch@" + shell.getCurrentDirectoryName() + " $ ";
+        } else if (shell.isDeveloperMode()) {
+            prompt = ">_ ";
+        } else {
+            prompt = "YSH " + shell.getCurrentDirectoryName() + " > ";
+        }
+    
         terminal.append(prompt);
         promptPosition = terminal.getDocument().getLength();
         terminal.setCaretPosition(promptPosition);
