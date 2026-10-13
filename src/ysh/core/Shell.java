@@ -16,7 +16,11 @@ import java.io.File;
 public class Shell {
 
     // win object for clearterminal() and other command related defined functions to access from YSHWindow to Shell
-    YSHWindow win;
+    private YSHWindow win;
+
+    public void attachWindow(YSHWindow window) {
+        this.win = window;
+    }
 
     private final CommandParser parser;
     private final CommandRegistry registry;
