@@ -26,4 +26,9 @@ public class CommandRegistry {
 
         return action.apply(command.getArgs());
     }
+
+    public java.util.List<String> getCommandNames() {
+       return java.util.List.copyOf(commands.keySet());
+    }  
+
 }

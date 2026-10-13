@@ -305,7 +305,12 @@ public class Shell {
     }
 
     private String commandClear(String[] args) {
-        return "__YSH_CLEAR__";
+        if (win == null) {
+            return "clear: window not ready\n";
+        }
+
+        win.clearTerminal();
+        return "";
     }
 
     private String commandTime(String[] args) {
@@ -684,5 +689,87 @@ public class Shell {
             " ",
             Arrays.copyOfRange(args, start, args.length)
         );
+    }
+
+    public List<String> getCommandCompletions(String input) {
+        if (input == null || input.isBlank()) {
+            return List.of();
+        }
+    
+        boolean trailingSpace =
+                Character.isWhitespace(input.charAt(input.length() - 1));
+    
+        String text = input.trim();
+        int separator = text.indexOf(' ');
+    
+        if (separator < 0) {
+            String prefix = text.toLowerCase(Locale.ROOT);
+        
+            if (prefix.equals("theme")) {
+                return themeCompletions("");
+            }
+        
+            if (prefix.equals("note")) {
+                return noteCompletions("");
+            }
+        
+            List<String> matches = new ArrayList<>();
+        
+            for (String name : registry.getCommandNames()) {
+                if (name.startsWith(prefix)) {
+                    matches.add(name);
+                }
+            }
+        
+            matches.sort(String.CASE_INSENSITIVE_ORDER);
+            return matches;
+        }
+    
+        if (trailingSpace) {
+            return List.of();
+        }
+    
+        String command =
+                text.substring(0, separator).toLowerCase(Locale.ROOT);
+        String prefix = text.substring(separator + 1).toLowerCase(Locale.ROOT);
+    
+        if (command.equals("theme") && !prefix.contains(" ")) {
+            return themeCompletions(prefix);
+        }
+    
+        if (command.equals("note") && !prefix.contains(" ")) {
+            return noteCompletions(prefix);
+        }
+    
+        return List.of();
+    }
+    
+    private List<String> themeCompletions(String prefix) {
+        List<String> matches = new ArrayList<>();
+    
+        for (String theme : new String[]{
+                "black", "matrix", "blue", "cyan", "purple",
+                "red", "dark", "light", "pink", "magenta", "orange"
+        }) {
+            if (theme.startsWith(prefix)) {
+                matches.add("theme " + theme);
+            }
+        }
+    
+        return matches;
+    }
+    
+    private List<String> noteCompletions(String prefix) {
+        List<String> matches = new ArrayList<>();
+    
+        for (String action : new String[]{
+                "add", "list", "view", "delete", "clear"
+        }) {
+            if (action.startsWith(prefix)) {
+                matches.add("note " + action);
+            }
+        }
+    
+        return matches;
     }
 }

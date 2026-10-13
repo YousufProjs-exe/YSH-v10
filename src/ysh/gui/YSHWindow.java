@@ -173,6 +173,7 @@ public class YSHWindow {
                         
                         e.consume();
                         clearTerminal();
+                        printBanner();
                         return;
                     } 
 
@@ -360,11 +361,11 @@ private void executeCurrentCommand() {
 
             String output = shell.execute(command);
 
-            if ("__YSH_CLEAR__".equals(output)) {
-                clearTerminal();
-                scrollToBottom();
-                return;
-            }
+            // if ("__YSH_CLEAR__".equals(output)) {
+            //     clearTerminal();
+            //     scrollToBottom();
+            //     return;
+            // }
 
             terminal.append(output);
         }
@@ -402,109 +403,37 @@ private void executeCurrentCommand() {
     
     // COMMAND COMPLETION
     private void completeCommand() {
-    
         String input;
-    
-        try {
-        
-            int length = terminal.getDocument().getLength() - promptPosition;
-            input = terminal.getText(promptPosition, length).trim();
-        
-        } catch (Exception e) {
-        
-            return;
-        }
-    
-        if (input.isEmpty()) {
-            return;
-        }
-    
-        String[] commands = {
-        
-            "help",
-            "chat host",
-            "chat join",
-            "mkdir ",
-            "touch ",
-            "rm ",
-            "rename ",
-            "copy ",
-            "paste ",
-            "move ",
-            "ls",
-            "search ",
-            "cat ",
-            "write ",
-            "cd ",
-            "pwd",
-            "home",
-            "calc ",
-            "echo ",
-            "clear",
-            "cls",
-            "whatsup",
-            "sysinfo",
-            "theme ",
-            "theme dark",
-            "theme cyan",
-            "theme red",
-            "theme light",
-            "theme matrix",
-            "theme purple",
-            "theme pink",
-            "theme magenta",
-            "open ",
-            "run ",
-            "check",
-            "developer",
-            "note",
-            "scan",
-            "msg ",
-            "username",
-            "listusers",
-            "kick ",
-            "announce ",
-            "fileshare host",
-            "fileshare get",
-            "sudo",
-            "whoami",
-            "whocreatedyou",
-            "easteregg",
-            "exit"
-        };
-    
-        ArrayList<String> matches = new ArrayList<>();
-    
-        for (String command : commands) {
-        
-            if (command.startsWith(input)) {
-                matches.add(command);
-            }
-        }
-    
-        if (matches.size() == 1) {
-        
-            replaceCurrentInput(matches.get(0));
-        
-        } else if (matches.size() > 1) {
-        
-            terminal.append("\n");
-        
-            for (String match : matches) {
 
-                terminal.append(match + "    ");
-            }
-        
+        try {
+            int length = terminal.getDocument().getLength() - promptPosition;
+
+            input = terminal.getText(promptPosition, length);
+        } catch (Exception e) {
+            return;
+        }
+
+        if (input.isBlank()) {
+            return;
+        }
+
+        List<String> matches = shell.getCommandCompletions(input);
+
+        if (matches.size() == 1) {
+            replaceCurrentInput(matches.get(0));
+        } else if (matches.size() > 1) {
             terminal.append("\n");
-        
+            terminal.append(String.join("    ", matches));
+            terminal.append("\n");
+
             printPrompt();
-            replaceCurrentInput(input);
+            replaceCurrentInput(input.trim());
+            scrollToBottom();
         }
     }
-
+    
     // CLEAR 
     public void clearTerminal() {
-
         terminal.setText("");
         printBanner();
     }
