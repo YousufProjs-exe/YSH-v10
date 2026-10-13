@@ -26,7 +26,7 @@ public class YSHWindow {
     // terminal.setCaretColor(textColor);
 
     private Color bgColor = Color.BLACK;
-    private Color textColor = new Color(0, 255, 70);
+    private Color textColor = Color.LIGHT_GRAY;
 
     // KONAMI FOR DEVELOPER 
     private final int[] konamiCode = {
@@ -79,7 +79,7 @@ public class YSHWindow {
         terminal.setFont(new Font("Consolas", Font.PLAIN, 15));
         
         terminal.setBackground(Color.BLACK);
-        terminal.setForeground(new Color(0, 255, 70));
+        terminal.setForeground(Color.LIGHT_GRAY);
         terminal.setCaretColor(Color.WHITE);
         terminal.setLineWrap(false);
         terminal.setWrapStyleWord(false);

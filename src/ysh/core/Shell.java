@@ -29,7 +29,7 @@ public class Shell {
     private final ExpressionCalculator calculator;
     private final NetworkManager networkManager;
     private boolean developerMode = false;
-    private String currentTheme = "matrix";
+    private String currentTheme = "black";
 
     public Shell() {
 
