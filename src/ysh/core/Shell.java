@@ -310,12 +310,7 @@ public class Shell {
     }
 
     private String commandClear(String[] args) {
-        if (win == null) {
-            return "clear: window not ready\n";
-        }
-
-        win.clearTerminal();
-        return "";
+        return "__YSH_CLEAR__";
     }
 
     private String commandTime(String[] args) {

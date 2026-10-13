@@ -121,7 +121,6 @@ public class YSHWindow {
                     //     e.consume();                    
                     //     return;
                     // }
-                    
                     if (checkArch(e.getKeyCode())) {
                         terminal.append("\n");
                         terminal.append(shell.execute("arch"));
@@ -349,44 +348,46 @@ public class YSHWindow {
         terminal.setCaretPosition(promptPosition);
     }
 
-private void executeCurrentCommand() {
-    try {
-        int end = terminal.getDocument().getLength();
+    private void executeCurrentCommand() {
+        try {
+            int end = terminal.getDocument().getLength();
 
-        if (end < promptPosition) {
-            return;
+            if (end < promptPosition) {
+                return;
+            }
+
+            String command = terminal.getText(
+                promptPosition,
+                end - promptPosition
+            ).trim();
+
+            terminal.append("\n");
+
+            if (!command.isEmpty()) {
+                historyIndex = shell.getCommandHistory().size();
+
+                String output = shell.execute(command);
+
+                if ("__YSH_CLEAR__".equals(output)) {
+                    clearTerminal();
+                    printPrompt();
+                    scrollToBottom();
+                    return;
+                }
+
+                terminal.append(output);
+            }
+
+            printPrompt();
+            scrollToBottom();
+
+        } catch (Exception e) {
+            terminal.append("YSH: input error\n");
+            printPrompt();
+            scrollToBottom();
         }
-
-        String command = terminal.getText(
-            promptPosition,
-            end - promptPosition
-        ).trim();
-
-        terminal.append("\n");
-
-        if (!command.isEmpty()) {
-            historyIndex = shell.getCommandHistory().size();
-
-            String output = shell.execute(command);
-
-            // if ("__YSH_CLEAR__".equals(output)) {
-            //     clearTerminal();
-            //     scrollToBottom();
-            //     return;
-            // }
-
-            terminal.append(output);
-        }
-
-        printPrompt();
-        scrollToBottom();
-
-    } catch (Exception e) {
-        terminal.append("YSH: input error\n");
-        printPrompt();
-        scrollToBottom();
     }
-}
+    
     private void replaceCurrentInput(String text) {
 
         try {
@@ -441,9 +442,12 @@ private void executeCurrentCommand() {
     }
     
     // CLEAR 
+    // public void clearTerminal() {
+    //     terminal.setText("");
+    //     printBanner();
+    // }
     public void clearTerminal() {
         terminal.setText("");
-        printBanner();
     }
 
     // SCROOL BOTTOM 
