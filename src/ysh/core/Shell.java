@@ -542,13 +542,42 @@ public class Shell {
         developerMode = !developerMode;
 
         if (developerMode) {
-            return """
-                Developer Mode Enabled
-                Welcome back, Developer.
-                """;
+            return developerModeBanner();
         }
 
-        return "Developer Mode Disabled\n";
+        return "Developer Mode disabled.\n";
+    }
+
+    private String developerModeBanner() {
+        return """
+
+         __     __  _______  __     __
+          __   __   ||       ||     ||
+           __ __    ||       ||     ||
+            __      ||_____  ||_____||
+            __           ||  ||     ||
+            __           ||  ||     ||
+            __      _____||  __     __
+
+
+        ______________________________
+
+              YSH TERMINAL v10
+              Developer Edition
+        ______________________________
+
+        Status : Ready but Demo 
+        JDK    : %s
+        Mode   : GUI DEV EDITION
+
+        Type 'help' or continue anyways.
+
+        """.formatted(System.getProperty("java.specification.version"));
+    }
+
+    public String activateDeveloperMode() {
+        developerMode = true;
+        return developerModeBanner();
     }
 
     private String commandArch(String[] args) {

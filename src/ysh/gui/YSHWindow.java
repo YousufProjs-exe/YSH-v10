@@ -99,13 +99,19 @@ public class YSHWindow {
                 public void keyPressed(KeyEvent e) {
 
                     if (checkKonami(e.getKeyCode())) {
-
-                        terminal.append("\nKonami Code Activated!\n");
-                        terminal.append(shell.execute("developer"));
-                    
-                    
-                        printPrompt();                    
-                        e.consume();                    
+                        terminal.append("""
+                        
+                            ______________________________
+                        
+                                    ACHIEVEMENT
+                                 Developer Instincts
+                        
+                            ______________________________
+                            """);
+                        
+                        terminal.append(shell.activateDeveloperMode());
+                        printPrompt();
+                        e.consume();
                         return;
                     }
                     protectPrompt();
@@ -121,6 +127,7 @@ public class YSHWindow {
                     //     e.consume();                    
                     //     return;
                     // }
+
                     if (checkArch(e.getKeyCode())) {
                         terminal.append("\n");
                         terminal.append(shell.execute("arch"));
@@ -341,9 +348,11 @@ public class YSHWindow {
 
     // **PROMPT FUNCTION** 
     private void printPrompt() {
+        String prompt = shell.isDeveloperMode()
+            ? ">_ "
+            : "YSH " + shell.getCurrentDirectoryName() + " > ";
 
-        terminal.append("YSH " + shell.getCurrentDirectoryName() +" > ");
-    
+        terminal.append(prompt);
         promptPosition = terminal.getDocument().getLength();
         terminal.setCaretPosition(promptPosition);
     }
