@@ -28,6 +28,7 @@ public class Shell {
     private final List<String> commandHistory = new ArrayList<>();
 
     private boolean developerMode = false;
+    private boolean archMode = false;
 
     public Shell() {
         parser = new CommandParser();
@@ -113,6 +114,7 @@ public class Shell {
         registry.register("calc", this::commandCalc);
         registry.register("note", this::commandNote);
         registry.register("developer", this::commandDeveloper);
+        registry.register("arch", this::commandArch);
     }
 
     private void registerThemeCommands() {
@@ -217,6 +219,9 @@ public class Shell {
               announce <message>          announce to room
               kick <username>             remove a user
 
+            MODES 
+             developer                   hidden - peek source code 
+             arch                        hidden - peek source code 
             ========================================================
             """;
     }
@@ -549,6 +554,20 @@ public class Shell {
         }
 
         return "Developer Mode Disabled\n";
+    }
+
+    private String commandArch(String[] args) {
+        archMode = !archMode;
+
+        if (archMode) {
+            return """
+                ARCH MODE ENABLED
+                No shortcuts. No AI. Just you and your code.
+                Build. Learn. Understand.
+                """;
+        }
+
+        return "Arch Mode Disabled\n";
     }
 
     // THEME COMMAND

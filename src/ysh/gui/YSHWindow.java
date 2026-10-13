@@ -110,15 +110,23 @@ public class YSHWindow {
                     }
                     protectPrompt();
 
-                    if (checkArch(e.getKeyCode())) {
+                    // if (checkArch(e.getKeyCode())) {
 
-                        terminal.append("\n Arch Mode Activated!\n");
-                        terminal.append(shell.execute("developer")); // developer to arch pending 
+                    //     terminal.append("\n Arch Mode Activated!\n");
+                    //     terminal.append(shell.execute("developer")); // developer to arch pending 
                     
                         
                     
-                        printPrompt();                    
-                        e.consume();                    
+                    //     printPrompt();                    
+                    //     e.consume();                    
+                    //     return;
+                    // }
+                    
+                    if (checkArch(e.getKeyCode())) {
+                        terminal.append("\n");
+                        terminal.append(shell.execute("arch"));
+                        printPrompt();
+                        e.consume();
                         return;
                     }
                     protectPrompt();
