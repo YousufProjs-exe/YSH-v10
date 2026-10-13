@@ -356,7 +356,6 @@ private void executeCurrentCommand() {
         terminal.append("\n");
 
         if (!command.isEmpty()) {
-            shell.recordCommand(command);
             historyIndex = shell.getCommandHistory().size();
 
             String output = shell.execute(command);
