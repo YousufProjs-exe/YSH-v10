@@ -75,7 +75,7 @@ public class YSHWindow {
         frame.setSize(760, 470);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         terminal = new JTextArea();
-        shell.attachWindow(this);`
+        shell.attachWindow(this);
         terminal.setFont(new Font("Consolas", Font.PLAIN, 15));
         
         terminal.setBackground(Color.BLACK);
