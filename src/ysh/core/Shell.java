@@ -665,18 +665,22 @@ public class Shell {
 
         // THEMES 
         registry.register("theme", args -> {
-
-            // cant figure !!! 10+ tries !! 
-            win.setTheme(currentTheme);
-            win.applyTheme();
             if (args.length == 0) {
-            
-                return "themes: matrix | blue | purple | red | dark | light\n";
+                return "themes: matrix | blue | cyan | purple | red | dark | light | pink | magenta | orange\n";
             }
         
-            currentTheme = args[0].toLowerCase();
+            if (win == null) {
+                return "theme: window not ready\n";
+            }
         
-            return "theme changed to " + currentTheme + "\n";
+            String selected = args[0].toLowerCase();
+        
+            if (!win.setTheme(selected)) {
+                return "theme: unknown theme '" + selected + "'\n";
+            }
+        
+            currentTheme = selected;
+            return "theme changed to " + selected + "\n";
         });
 
         // ***LAN NETWORKING***

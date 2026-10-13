@@ -421,16 +421,6 @@ public class YSHWindow {
 
                 return;
             }
-
-            // THEME 
-            if (command.equalsIgnoreCase("theme")) {
-
-                setTheme(command);
-                printPrompt();
-                scrollToBottom();
-
-                return;
-            }
         
             String output = shell.execute(command);
 
@@ -649,17 +639,24 @@ public class YSHWindow {
     }
 
     // THEMES SYSTEM / FUNCTION 
-    public  void setTheme(String theme) {
+    public boolean setTheme(String theme) {
+        if (theme == null) {
+            return false;
+        }
 
         switch (theme.toLowerCase()) {
-
             case "matrix":
                 bgColor = Color.BLACK;
-                textColor = Color.GREEN;
+                textColor = new Color(0, 255, 70);
                 break;
 
             case "blue":
-                bgColor = Color.DARK_GRAY;
+                bgColor = new Color(10, 25, 60);
+                textColor = Color.CYAN;
+                break;
+
+            case "cyan":
+                bgColor = new Color(0, 35, 45);
                 textColor = Color.CYAN;
                 break;
 
@@ -685,25 +682,29 @@ public class YSHWindow {
                 textColor = Color.BLACK;
                 break;
 
-            // help me solve this too 
             case "pink":
-                bgColor = Color.pink; 
-                textColor = Color.CYAN;
+                bgColor = new Color(55, 10, 35);
+                textColor = new Color(255, 150, 210);
+                break;
 
             case "magenta":
-                bgColor = Color.MAGENTA;
-                textColor = Color.DARK_GRAY;
-            
+                bgColor = new Color(45, 0, 45);
+                textColor = Color.MAGENTA;
+                break;
+
+            case "orange":
+                bgColor = new Color(40, 20, 0);
+                textColor = new Color(255, 165, 0);
+                break;
 
             default:
-                terminal.append("themes: matrix | blue | purple | red | dark | light\n");
-                terminal.append("upcoming: Translucent | Obuqe | Magenta | Pink - White | Orange - Yellow \n");
-                return;
+                return false;
         }
 
         applyTheme();
+        return true;
     }
-
+    
     // APPLY THEME - needed v8 refff 
     public void applyTheme(){
         
